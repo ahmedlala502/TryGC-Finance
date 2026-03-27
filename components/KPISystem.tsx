@@ -177,7 +177,7 @@ const teams: Team[] = [
       { en: 'Track campaign status, missing coverage, and final reports with the client.', ar: 'متابعة حالة الحملة والتغطية الناقصة والتقارير النهائية مع العميل.' },
     ],
     kpis: [
-      { name: 'List Quality Score', nameAr: 'مؤشر جودة القائمة', target: '≥ 20%', type: 'up', rationale: 'Calculated as (posting coverages / list size). A 20%+ rate means at least 1 in 5 creators on the submitted list deliver final content — commercially viable threshold.' },
+      { name: 'List Quality Score', nameAr: 'مؤشر جودة القائم��', target: '≥ 20%', type: 'up', rationale: 'Calculated as (posting coverages / list size). A 20%+ rate means at least 1 in 5 creators on the submitted list deliver final content — commercially viable threshold.' },
       { name: 'List Approval Turnaround', nameAr: 'زمن اعتماد القائمة', target: '≤ 48h', type: 'down', rationale: 'Time from list submission to client approval. Delays here push back activation and compress the execution window for all teams.' },
       { name: 'Campaign Activation Rate', nameAr: 'معدل تفعيل الحملات', target: '≥ 90%', type: 'up', rationale: 'Measures how many approved campaigns actually go live. A low rate indicates friction in handoff from community to coordination/chat.' },
       { name: 'Client Feedback Capture Rate', nameAr: 'معدل إغلاق الفيدباك', target: '≥ 90%', type: 'up', rationale: 'Tracks whether post-campaign feedback is collected and documented. Critical for campaign learning, renewal proposals, and issue resolution.' },
@@ -255,18 +255,18 @@ export default function KPISystem() {
   const currentTeam = teams.find(t => t.id === activeTeam)
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-bg via-bg2 to-bg3">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-slate-50">
       {/* Header */}
-      <header className="sticky top-0 z-50 border-b border-border bg-bg2 backdrop-blur-sm">
+      <header className="sticky top-0 z-50 border-b border-slate-200 bg-white/80 backdrop-blur-sm">
         <div className="mx-auto max-w-full px-4 sm:px-6 lg:px-8">
           <div className="flex h-16 items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br from-primary to-accent text-white font-bold text-sm">
+              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br from-blue-600 to-blue-400 text-white font-bold text-sm">
                 GC
               </div>
               <div>
-                <h1 className="text-sm font-bold uppercase tracking-wider text-text">Knowledge Base</h1>
-                <p className="text-xs text-muted">Team KPI System</p>
+                <h1 className="text-sm font-bold uppercase tracking-wider text-slate-900">Knowledge Base</h1>
+                <p className="text-xs text-slate-500">Team KPI System</p>
               </div>
             </div>
             <div className="flex gap-2">
@@ -274,8 +274,8 @@ export default function KPISystem() {
                 onClick={() => setIsArabic(false)}
                 className={`px-3 py-1.5 rounded-md text-xs font-semibold transition-all ${
                   !isArabic
-                    ? 'bg-primary text-white'
-                    : 'border border-border bg-bg3 text-muted hover:border-border2 hover:text-text2'
+                    ? 'bg-blue-600 text-white'
+                    : 'border border-slate-200 bg-slate-100 text-slate-600 hover:bg-slate-200 hover:text-slate-900'
                 }`}
               >
                 EN
@@ -284,8 +284,8 @@ export default function KPISystem() {
                 onClick={() => setIsArabic(true)}
                 className={`px-3 py-1.5 rounded-md text-xs font-semibold transition-all ${
                   isArabic
-                    ? 'bg-primary text-white'
-                    : 'border border-border bg-bg3 text-muted hover:border-border2 hover:text-text2'
+                    ? 'bg-blue-600 text-white'
+                    : 'border border-slate-200 bg-slate-100 text-slate-600 hover:bg-slate-200 hover:text-slate-900'
                 }`}
               >
                 AR
@@ -296,7 +296,7 @@ export default function KPISystem() {
       </header>
 
       {/* Main Content */}
-      <main className="mx-auto max-w-full px-4 sm:px-6 lg:px-8 py-12">
+      <main className="mx-auto w-full px-4 sm:px-6 lg:px-8 py-12">
         {/* Hero Section */}
         {currentTeam && (
           <div className="mb-12 animate-fade-in">
@@ -331,15 +331,15 @@ export default function KPISystem() {
           {/* Sidebar Navigation */}
           <div className="lg:col-span-1">
             <div className="sticky top-20 space-y-2">
-              <p className="px-4 py-2 text-xs font-semibold uppercase tracking-wider text-muted">Teams</p>
+              <p className="px-4 py-2 text-xs font-semibold uppercase tracking-wider text-slate-500">Teams</p>
               {teams.map((team) => (
                 <button
                   key={team.id}
                   onClick={() => setActiveTeam(team.id)}
                   className={`w-full flex items-center gap-3 rounded-lg px-4 py-3 text-left transition-all ${
                     activeTeam === team.id
-                      ? 'bg-bg2 border-l-4 shadow-sm'
-                      : 'hover:bg-bg2/50 border-l-4 border-transparent'
+                      ? 'bg-white border-l-4 shadow-sm'
+                      : 'hover:bg-slate-100/50 border-l-4 border-transparent'
                   }`}
                   style={{
                     borderColor: activeTeam === team.id ? team.color : 'transparent',
@@ -348,7 +348,7 @@ export default function KPISystem() {
                 >
                   <span className="text-2xl">{team.icon}</span>
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-semibold text-text truncate">
+                    <p className="text-sm font-semibold text-slate-900 truncate">
                       {isArabic ? team.nameAr : team.name}
                     </p>
                   </div>
@@ -362,16 +362,16 @@ export default function KPISystem() {
             <div className="lg:col-span-2 space-y-8">
               {/* Tasks Section */}
               <section className="animate-slide-in">
-                <h3 className="mb-4 text-xl font-bold text-text">
+                <h3 className="mb-4 text-xl font-bold text-slate-900">
                   {isArabic ? '📋 المهام الرئيسية' : '📋 Key Responsibilities'}
                 </h3>
                 <div className="grid gap-3">
                   {currentTeam.tasks.map((task, idx) => (
                     <div
                       key={idx}
-                      className="rounded-lg border border-border bg-bg2 p-4 hover:border-border2 hover:shadow-sm transition-all"
+                      className="rounded-lg border border-slate-200 bg-white p-4 hover:border-slate-300 hover:shadow-sm transition-all"
                     >
-                      <p className="text-sm leading-relaxed text-text">
+                      <p className="text-sm leading-relaxed text-slate-700">
                         {isArabic ? task.ar : task.en}
                       </p>
                     </div>
@@ -381,17 +381,17 @@ export default function KPISystem() {
 
               {/* KPIs Section */}
               <section className="animate-slide-in">
-                <h3 className="mb-4 text-xl font-bold text-text">
+                <h3 className="mb-4 text-xl font-bold text-slate-900">
                   {isArabic ? '🎯 مؤشرات الأداء الرئيسية' : '🎯 Key Performance Indicators'}
                 </h3>
                 <div className="grid gap-4 sm:grid-cols-1 lg:grid-cols-2">
                   {currentTeam.kpis.map((kpi, idx) => (
                     <div
                       key={idx}
-                      className="rounded-lg border border-border bg-bg2 p-5 hover:shadow-sm transition-all"
+                      className="rounded-lg border border-slate-200 bg-white p-5 hover:shadow-sm transition-all"
                     >
                       <div className="flex items-start justify-between gap-3 mb-3">
-                        <h4 className="font-semibold text-text text-sm sm:text-base">
+                        <h4 className="font-semibold text-slate-900 text-sm sm:text-base">
                           {isArabic ? kpi.nameAr : kpi.name}
                         </h4>
                         <span
@@ -404,7 +404,7 @@ export default function KPISystem() {
                           {kpi.target}
                         </span>
                       </div>
-                      <p className="text-xs sm:text-sm text-text2 leading-relaxed">
+                      <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
                         {kpi.rationale}
                       </p>
                     </div>
@@ -422,7 +422,7 @@ export default function KPISystem() {
                       backgroundColor: currentTeam.lightBg,
                     }}
                   >
-                    <p className="text-sm sm:text-base font-semibold text-text2 leading-relaxed">
+                    <p className="text-sm sm:text-base font-semibold text-slate-700 leading-relaxed">
                       ✓ {isArabic ? currentTeam.exampleAr : currentTeam.example}
                     </p>
                   </div>
