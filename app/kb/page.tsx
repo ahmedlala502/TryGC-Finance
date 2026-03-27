@@ -69,8 +69,8 @@ export default function KBPage() {
       <main className="container max-w-6xl mx-auto px-4 py-12">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-slate-900 mb-2">Knowledge Base</h1>
-          <p className="text-slate-600">
+          <h1 className="text-3xl font-bold text-black mb-2">Knowledge Base</h1>
+          <p className="text-black">
             SOPs, templates, playbooks, and checklists for all operations
           </p>
         </div>
@@ -92,10 +92,10 @@ export default function KBPage() {
             {/* Filters */}
             <div className="bg-white rounded-lg border border-slate-200 p-4 shadow-sm">
               <div className="flex items-end gap-4 flex-wrap">
-                <div className="flex-1 min-w-64">
-                  <label className="text-sm font-semibold text-slate-700 block mb-2">
-                    Search articles
-                  </label>
+            <div className="flex-1 min-w-64">
+              <label className="text-sm font-semibold text-black block mb-2">
+                Search articles
+              </label>
                   <Input
                     placeholder="Search by title, content, or tags..."
                     value={searchQuery}
@@ -148,7 +148,7 @@ export default function KBPage() {
             {filteredArticles.length === 0 ? (
               <Card className="border-2 border-dashed border-slate-300 bg-slate-50">
                 <CardContent className="py-12 text-center">
-                  <p className="text-slate-600">No articles match your filters</p>
+                  <p className="text-black">No articles match your filters</p>
                 </CardContent>
               </Card>
             ) : (
@@ -226,10 +226,10 @@ export default function KBPage() {
             {/* Template Filters */}
             <div className="bg-white rounded-lg border border-slate-200 p-4 shadow-sm">
               <div className="flex items-end gap-4 flex-wrap">
-                <div className="flex-1 min-w-48">
-                  <label className="text-sm font-semibold text-slate-700 block mb-2">
-                    Recipient Type
-                  </label>
+            <div className="flex-1 min-w-48">
+              <label className="text-sm font-semibold text-black block mb-2">
+                Filter by tag
+              </label>
                   <Select value={templateRecipient} onValueChange={(v: any) => setTemplateRecipient(v)}>
                     <SelectTrigger>
                       <SelectValue placeholder="All recipients" />
@@ -243,7 +243,7 @@ export default function KBPage() {
                 </div>
 
                 <div className="flex-1 min-w-48">
-                  <label className="text-sm font-semibold text-slate-700 block mb-2">
+                  <label className="text-sm font-semibold text-black block mb-2">
                     Language
                   </label>
                   <Select value={templateLanguage} onValueChange={(v: any) => setTemplateLanguage(v)}>
@@ -260,9 +260,9 @@ export default function KBPage() {
             </div>
 
             {allTemplates.length === 0 ? (
-              <Card className="border-2 border-dashed border-slate-300 bg-slate-50">
-                <CardContent className="py-12 text-center">
-                  <p className="text-slate-600">No templates match your filters</p>
+            <Card className="border-2 border-dashed border-slate-300 bg-slate-50">
+              <CardContent className="py-12 text-center">
+                <p className="text-black">No templates match your filters</p>
                 </CardContent>
               </Card>
             ) : (

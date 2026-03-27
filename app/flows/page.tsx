@@ -45,8 +45,8 @@ export default function FlowsPage() {
       <main className="container max-w-6xl mx-auto px-4 py-12">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-slate-900 mb-2">Decision Trees</h1>
-          <p className="text-slate-600">
+          <h1 className="text-3xl font-bold text-black mb-2">Decision Trees</h1>
+          <p className="text-black">
             Explore all operational workflows visualized as interactive flowcharts
           </p>
         </div>
@@ -55,8 +55,8 @@ export default function FlowsPage() {
         <div className="bg-white rounded-lg border border-slate-200 p-4 mb-8 shadow-sm">
           <div className="flex items-end gap-4 flex-wrap">
             <div className="flex-1 min-w-64">
-              <label className="text-sm font-semibold text-slate-700 block mb-2">
-                Search flows
+              <label className="text-sm font-semibold text-black block mb-2">
+                Filter by team
               </label>
               <Input
                 placeholder="Search by title or description..."
@@ -89,9 +89,9 @@ export default function FlowsPage() {
 
         {/* Flows Grid */}
         {filteredFlows.length === 0 ? (
-          <Card className="border-2 border-dashed border-slate-300 bg-slate-50">
-            <CardContent className="py-12 text-center">
-              <p className="text-slate-600">No flows match your filters</p>
+            <Card className="border-2 border-dashed border-slate-300 bg-slate-50">
+              <CardContent className="py-12 text-center">
+                <p className="text-black">No flows match your filters</p>
             </CardContent>
           </Card>
         ) : (
@@ -120,18 +120,18 @@ export default function FlowsPage() {
 
                   <CardContent className="flex-1 space-y-4">
                     {/* Team */}
-                    <div>
-                      <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-1">
-                        Team
-                      </p>
-                      <p className="text-sm text-slate-700">{team?.name}</p>
+                  <div>
+                    <p className="text-xs font-semibold text-black uppercase tracking-wide mb-1">
+                      Team
+                    </p>
+                    <p className="text-sm text-black">{team?.name}</p>
                     </div>
 
                     {/* Node Breakdown */}
                     <div>
-                      <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-2">
-                        Node Types
-                      </p>
+                    <p className="text-xs font-semibold text-black uppercase tracking-wide mb-2">
+                      Nodes
+                    </p>
                       <div className="flex flex-wrap gap-2">
                         {actionCount > 0 && (
                           <Badge

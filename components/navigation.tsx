@@ -28,7 +28,7 @@ export default function Navigation({ selectedRole }: NavigationProps) {
             <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-purple-600 to-blue-600 flex items-center justify-center text-white">
               ⚙
             </div>
-            <span className="text-slate-900">Grand Community (Confidential) </span>
+            <span className="text-black">Grand Community (Confidential) </span>
           </Link>
 
           {/* Main Nav */}
@@ -67,7 +67,7 @@ export default function Navigation({ selectedRole }: NavigationProps) {
 
           {/* Role Display */}
           {roleObj && (
-            <div className="text-sm text-slate-600 px-3 py-1 rounded-full bg-purple-50 border border-purple-200">
+            <div className="text-sm text-black px-3 py-1 rounded-full bg-purple-50 border border-purple-200">
               {roleObj.name}
             </div>
           )}

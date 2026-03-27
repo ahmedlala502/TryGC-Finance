@@ -94,7 +94,7 @@ export default function HomePage() {
   ]
 
   return (
-    <div style={{ background: 'var(--bg)', color: 'var(--text)', minHeight: '100vh' }}>
+    <div style={{ background: 'var(--bg)', color: '#000', minHeight: '100vh' }}>
       <Navigation selectedRole={selectedRole} />
 
       <main style={{ maxWidth: '1180px', margin: '0 auto', padding: '32px 24px 80px' }}>
@@ -102,10 +102,10 @@ export default function HomePage() {
         <div style={{ marginBottom: '40px' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '24px' }}>
             <div>
-              <h1 style={{ fontSize: '32px', fontWeight: '700', color: 'var(--text)', marginBottom: '8px' }}>
+              <h1 style={{ fontSize: '32px', fontWeight: '700', color: '#000', marginBottom: '8px' }}>
                 {language === 'en' ? 'Operations KPI Dashboard' : 'لوحة مفاتيح KPI للعمليات'}
               </h1>
-              <p style={{ color: 'var(--muted)', fontSize: '14px' }}>
+              <p style={{ color: '#000', fontSize: '14px' }}>
                 {language === 'en'
                   ? 'Real-time performance metrics and operational insights'
                   : 'مقاييس الأداء في الوقت الفعلي والرؤى التشغيلية'}
@@ -142,11 +142,11 @@ export default function HomePage() {
           {/* Role & Team Selectors */}
           <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
             <div style={{ flex: 1, minWidth: '200px' }}>
-              <label style={{ display: 'block', fontSize: '12px', fontWeight: '600', color: 'var(--text2)', marginBottom: '8px' }}>
+              <label style={{ display: 'block', fontSize: '12px', fontWeight: '600', color: '#000', marginBottom: '8px' }}>
                 {language === 'en' ? 'Select Role' : 'اختر الدور'}
               </label>
               <Select value={selectedRole} onValueChange={handleRoleChange}>
-                <SelectTrigger style={{ borderColor: 'var(--border)' }}>
+                <SelectTrigger style={{ borderColor: 'var(--border)', color: '#000' }}>
                   <SelectValue placeholder={language === 'en' ? 'Choose a role...' : 'اختر دوراً...'} />
                 </SelectTrigger>
                 <SelectContent>
@@ -177,7 +177,7 @@ export default function HomePage() {
                 }}
               >
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '16px' }}>
-                  <h3 style={{ fontSize: '13px', fontWeight: '500', color: 'var(--muted)' }}>{metric.label}</h3>
+                  <h3 style={{ fontSize: '13px', fontWeight: '500', color: '#000' }}>{metric.label}</h3>
                   <div
                     style={{
                       background: `linear-gradient(135deg, ${metric.color.split(' ')[1]}, ${metric.color.split(' ')[3]})`,
@@ -192,8 +192,8 @@ export default function HomePage() {
                   </div>
                 </div>
                 <div style={{ marginBottom: '12px' }}>
-                  <div style={{ fontSize: '32px', fontWeight: '700', color: 'var(--text)' }}>{metric.value}</div>
-                  <p style={{ fontSize: '12px', color: 'var(--muted)', marginTop: '4px' }}>{metric.description}</p>
+                  <div style={{ fontSize: '32px', fontWeight: '700', color: '#000' }}>{metric.value}</div>
+                  <p style={{ fontSize: '12px', color: '#000', marginTop: '4px' }}>{metric.description}</p>
                 </div>
               </div>
             )
@@ -204,7 +204,7 @@ export default function HomePage() {
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(350px, 1fr))', gap: '24px', marginBottom: '40px' }}>
           {/* Active Workflows */}
           <div style={{ background: 'var(--bg2)', border: `1px solid var(--border)`, borderRadius: '12px', padding: '24px' }}>
-            <h2 style={{ fontSize: '16px', fontWeight: '600', color: 'var(--text)', marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <h2 style={{ fontSize: '16px', fontWeight: '600', color: '#000', marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '8px' }}>
               <TrendingUp size={18} color="var(--accent)" />
               {language === 'en' ? 'Flow Performance' : 'أداء التدفق'}
             </h2>
@@ -212,7 +212,7 @@ export default function HomePage() {
               {performanceData.map((item, idx) => (
                 <div key={idx} style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                   <div style={{ flex: 1 }}>
-                    <div style={{ fontSize: '13px', fontWeight: '500', color: 'var(--text)', marginBottom: '6px' }}>
+                    <div style={{ fontSize: '13px', fontWeight: '500', color: '#000', marginBottom: '6px' }}>
                       {item.title}
                     </div>
                     <div
@@ -243,7 +243,7 @@ export default function HomePage() {
 
           {/* Quick Actions */}
           <div style={{ background: 'var(--bg2)', border: `1px solid var(--border)`, borderRadius: '12px', padding: '24px' }}>
-            <h2 style={{ fontSize: '16px', fontWeight: '600', color: 'var(--text)', marginBottom: '20px' }}>
+            <h2 style={{ fontSize: '16px', fontWeight: '600', color: '#000', marginBottom: '20px' }}>
               {language === 'en' ? 'Quick Access' : 'وصول سريع'}
             </h2>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
@@ -253,12 +253,12 @@ export default function HomePage() {
                 </Button>
               </Link>
               <Link href="/kb">
-                <Button variant="outline" style={{ width: '100%', borderColor: 'var(--border)', color: 'var(--text)' }}>
+                <Button variant="outline" style={{ width: '100%', borderColor: 'var(--border)', color: '#000' }}>
                   {language === 'en' ? 'Browse Knowledge Base' : 'استعرض قاعدة المعرفة'}
                 </Button>
               </Link>
               <Link href="/qa">
-                <Button variant="outline" style={{ width: '100%', borderColor: 'var(--border)', color: 'var(--text)' }}>
+                <Button variant="outline" style={{ width: '100%', borderColor: 'var(--border)', color: '#000' }}>
                   {language === 'en' ? 'QA & Audits' : 'ضمان الجودة والتدقيق'}
                 </Button>
               </Link>
@@ -268,7 +268,7 @@ export default function HomePage() {
 
         {/* Teams Overview */}
         <div style={{ background: 'var(--bg2)', border: `1px solid var(--border)`, borderRadius: '12px', padding: '24px' }}>
-          <h2 style={{ fontSize: '16px', fontWeight: '600', color: 'var(--text)', marginBottom: '20px' }}>
+          <h2 style={{ fontSize: '16px', fontWeight: '600', color: '#000', marginBottom: '20px' }}>
             {language === 'en' ? 'Teams Overview' : 'نظرة عامة على الفرق'}
           </h2>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px' }}>
@@ -285,8 +285,8 @@ export default function HomePage() {
                   gap: '8px',
                 }}
               >
-                <div style={{ fontSize: '13px', fontWeight: '600', color: 'var(--text)' }}>{team.name}</div>
-                <div style={{ fontSize: '12px', color: 'var(--muted)' }}>
+                <div style={{ fontSize: '13px', fontWeight: '600', color: '#000' }}>{team.name}</div>
+                <div style={{ fontSize: '12px', color: '#000' }}>
                   {appData.roles.filter((r) => r.teamId === team.id).length} {language === 'en' ? 'roles' : 'أدوار'}
                 </div>
                 <Badge style={{ width: 'fit-content', background: 'var(--accent)', color: 'white' }}>
