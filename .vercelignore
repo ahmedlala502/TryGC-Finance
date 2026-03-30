@@ -1,0 +1,13 @@
+node_modules
+.next
+__pycache__
+uploads
+*.log
+*.db
+app.py
+models.py
+requirements.txt
+seed.py
+static
+templates
+New folder
