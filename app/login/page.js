@@ -12,119 +12,69 @@ export default async function LoginPage({ searchParams }) {
   const workspace = getWorkspaceConfig();
 
   return (
-    <div
-      style={{
-        minHeight: "100vh",
-        display: "grid",
-        placeItems: "center",
-        padding: 24,
-        background:
-          "radial-gradient(circle at top left, rgba(218,226,253,0.9), transparent 32%), radial-gradient(circle at top right, rgba(211,228,254,0.85), transparent 30%), linear-gradient(180deg, #f8f9ff 0%, #eff4ff 100%)"
-      }}
-    >
-      <main
-        style={{
-          width: "100%",
-          maxWidth: 1040,
-          display: "grid",
-          gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))",
-          gap: 24,
-          position: "relative"
-        }}
-      >
-        <section
-          className="card hero-panel"
-          style={{ padding: 40, display: "grid", gap: 18, minHeight: 620, alignContent: "space-between" }}
-        >
-          <div style={{ display: "grid", gap: 18 }}>
-            <div style={{ display: "inline-flex", alignItems: "center", gap: 12 }}>
-              <div className="logo-icon brand-mark" style={{ width: 54, height: 54, fontSize: 20 }}>
-                TG
-              </div>
-              <div className="brand-copy login-brand-copy">
-                <div className="logo-text login-brand-name">
-                  {workspace.system_name}
-                </div>
-                <div className="login-brand-caption">
-                  Precision Management for National Operations
-                </div>
-              </div>
-            </div>
+    <div className="auth-shell">
+      <main className="auth-grid">
+        <section className="auth-panel auth-showcase">
+          <div className="auth-chip">
+            <span className="status-dot" />
+            Premium operating surface
+          </div>
 
-            <div style={{ display: "grid", gap: 12, maxWidth: 520 }}>
-              <div style={{ fontSize: 12, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: "var(--text-muted)" }}>
-                Architectural CRM
-              </div>
-              <h1 style={{ fontFamily: "var(--font-headline)", fontSize: 52, lineHeight: 1.02, letterSpacing: "-0.04em" }}>
-                Executive-grade sales operations, rebuilt in Next.js.
-              </h1>
-              <p style={{ color: "var(--text-secondary)", fontSize: 15, maxWidth: 460 }}>
-                The workspace now supports richer insights, workbook templates, editable CRM records, and admin controls without breaking the existing SQLite data.
-              </p>
-            </div>
+          <div className="brand-copy login-brand-copy">
+            <div className="logo-text login-brand-name">{workspace.system_name}</div>
+            <div className="login-brand-caption">{workspace.workspace_tagline}</div>
+          </div>
 
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(140px, 1fr))", gap: 14 }}>
-              {[
-                ["Secure 256-bit", "verified_user"],
-                ["Real-time sync", "analytics"],
-                ["Priority ops", "support_agent"]
-              ].map(([label, icon]) => (
-                <div key={label} className="card" style={{ padding: 16, background: "rgba(255,255,255,0.65)" }}>
-                  <div style={{ fontSize: 22, marginBottom: 8 }}>{icon === "verified_user" ? "✓" : icon === "analytics" ? "↗" : "◎"}</div>
-                  <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", color: "var(--text-secondary)" }}>
-                    {label}
-                  </div>
-                </div>
-              ))}
+          <div>
+            <h1 className="auth-title">Faster pipeline control with cleaner signal and stronger contrast.</h1>
+            <p className="auth-copy">
+              The interface now runs on a sharper dark and light theme system, a faster shell, and a clearer dashboard composition that keeps reporting and execution in the same flow.
+            </p>
+          </div>
+
+          <div className="auth-metric-grid">
+            <div className="auth-metric">
+              <div className="auth-metric-label">Visibility</div>
+              <div className="auth-metric-value">Live pipeline pressure</div>
+            </div>
+            <div className="auth-metric">
+              <div className="auth-metric-label">Speed</div>
+              <div className="auth-metric-value">Keyboard command center</div>
+            </div>
+            <div className="auth-metric">
+              <div className="auth-metric-label">Theme</div>
+              <div className="auth-metric-value">Dark and light ready</div>
             </div>
           </div>
 
-          <div className="topbar-chip" style={{ minWidth: 0, maxWidth: 360 }}>
-            <span className="topbar-chip-label">Operations status</span>
-            <strong>All systems nominal</strong>
-            <span style={{ fontSize: 12, color: "var(--text-secondary)" }}>
-              Core pipeline engine is active and the shared SQLite workspace is ready for use.
-            </span>
+          <div className="auth-status">
+            Workspace services are ready. Sign in to open dashboards, pipeline tools, templates, and executive reporting.
           </div>
         </section>
 
-        <section className="card" style={{ padding: 34, alignSelf: "center", background: "rgba(255,255,255,0.88)", backdropFilter: "blur(18px)" }}>
-          <div style={{ marginBottom: 28 }}>
-            <h2 style={{ fontFamily: "var(--font-headline)", fontSize: 28, fontWeight: 800 }}>Sign In</h2>
-            <p style={{ color: "var(--text-secondary)", marginTop: 6 }}>
-              Enter credentials to access {workspace.system_name}.
+        <section className="auth-panel auth-form-panel">
+          <div>
+            <h2 className="auth-title" style={{ fontSize: "2.15rem", maxWidth: "none" }}>Sign in</h2>
+            <p className="auth-copy" style={{ marginTop: 8 }}>
+              Enter your credentials to access {workspace.system_name}.
             </p>
           </div>
 
           {error ? (
-            <div className="flash flash-danger" style={{ marginBottom: 16 }}>
+            <div className="flash flash-danger" style={{ marginTop: 18 }}>
               <span>{error}</span>
             </div>
           ) : null}
 
-          <form method="post" action="/api/login" style={{ display: "grid", gap: 18 }}>
+          <form method="post" action="/api/login" style={{ display: "grid", gap: 18, marginTop: 22 }}>
             <div className="form-group">
-              <label htmlFor="email">Business Email</label>
-              <input
-                id="email"
-                name="email"
-                type="email"
-                required
-                placeholder="name@company.com"
-                style={{ background: "var(--surface-container-low)" }}
-              />
+              <label htmlFor="email">Business email</label>
+              <input id="email" name="email" type="email" required placeholder="name@company.com" />
             </div>
 
             <div className="form-group">
-              <label htmlFor="password">Security Key</label>
-              <input
-                id="password"
-                name="password"
-                type="password"
-                required
-                placeholder="••••••••••••"
-                style={{ background: "var(--surface-container-low)" }}
-              />
+              <label htmlFor="password">Password</label>
+              <input id="password" name="password" type="password" required placeholder="••••••••••••" />
             </div>
 
             <label style={{ display: "flex", alignItems: "center", gap: 10, fontSize: 13, color: "var(--text-secondary)" }}>
@@ -132,32 +82,21 @@ export default async function LoginPage({ searchParams }) {
               Remember this device
             </label>
 
-            <button type="submit" className="btn btn-primary w-100" style={{ justifyContent: "center", padding: "14px 18px" }}>
-              Enter Dashboard
+            <button type="submit" className="btn btn-primary w-100" style={{ justifyContent: "center" }}>
+              Enter dashboard
             </button>
           </form>
 
-          <div style={{ marginTop: 28 }}>
-            <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
-              <div style={{ flex: 1, height: 1, background: "rgba(198,198,205,0.4)" }} />
-              <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", color: "var(--text-muted)" }}>
-                Demo access
-              </span>
-              <div style={{ flex: 1, height: 1, background: "rgba(198,198,205,0.4)" }} />
+          <div className="auth-demo-list">
+            <div className="auth-demo-item">
+              <div className="auth-demo-label">Admin access</div>
+              <div className="auth-demo-value">admin@local</div>
+              <div className="auth-demo-pass">Admin@12345</div>
             </div>
-
-            <div style={{ display: "grid", gap: 10 }}>
-              <div className="topbar-chip" style={{ minWidth: 0 }}>
-                <span className="topbar-chip-label">Admin</span>
-                <strong>admin@local</strong>
-                <span style={{ fontSize: 12, color: "var(--text-secondary)" }}>Admin@12345</span>
-              </div>
-
-              <div className="topbar-chip" style={{ minWidth: 0 }}>
-                <span className="topbar-chip-label">Manager</span>
-                <strong>manager@local</strong>
-                <span style={{ fontSize: 12, color: "var(--text-secondary)" }}>Manager@12345</span>
-              </div>
+            <div className="auth-demo-item">
+              <div className="auth-demo-label">Manager access</div>
+              <div className="auth-demo-value">manager@local</div>
+              <div className="auth-demo-pass">Manager@12345</div>
             </div>
           </div>
         </section>

@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { findUserByEmail, setSessionCookie, touchLastLogin, verifyPassword } from "@/lib/auth";
+import { getWorkspaceConfig } from "@/lib/data";
 
 export async function POST(request) {
   const formData = await request.formData();
@@ -12,7 +13,9 @@ export async function POST(request) {
   }
 
   touchLastLogin(user.id);
-  const response = NextResponse.redirect(new URL("/", request.url), 303);
+  const workspace = getWorkspaceConfig();
+  const destination = workspace.default_home || "/";
+  const response = NextResponse.redirect(new URL(destination, request.url), 303);
   setSessionCookie(response, user.id);
   return response;
 }

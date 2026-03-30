@@ -1,20 +1,42 @@
 export default function Loading() {
   return (
-    <div style={{ padding: 24 }}>
-      <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 4 }}>
-          <div className="skeleton skeleton-line" style={{ width: 160, height: 28 }} />
-          <div className="skeleton" style={{ width: 100, height: 32, borderRadius: 6 }} />
+    <div className="loading-screen">
+      <div className="loading-hero">
+        <div className="loading-card">
+          <div className="skeleton skeleton-line wide" style={{ height: 14 }} />
+          <div className="skeleton skeleton-line full" style={{ height: 58, marginTop: 16 }} />
+          <div className="skeleton skeleton-line wide" style={{ height: 14, marginTop: 14 }} />
+          <div className="loading-grid" style={{ marginTop: 20 }}>
+            {[1, 2, 3].map((i) => (
+              <div key={i} className="skeleton" style={{ height: 110, borderRadius: 18 }} />
+            ))}
+          </div>
         </div>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(5, 1fr)", gap: 16, marginBottom: 8 }}>
-          {[1,2,3,4,5].map(i => (
-            <div key={i} className="skeleton" style={{ height: 84, borderRadius: 10 }} />
+        <div className="loading-card">
+          <div className="skeleton skeleton-line short" style={{ height: 14 }} />
+          {[1, 2, 3, 4].map((i) => (
+            <div key={i} className="skeleton" style={{ height: 72, borderRadius: 18, marginTop: 12 }} />
           ))}
         </div>
-        <div className="skeleton" style={{ height: 200, borderRadius: 10, width: "100%" }} />
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
-          <div className="skeleton" style={{ height: 180, borderRadius: 10 }} />
-          <div className="skeleton" style={{ height: 180, borderRadius: 10 }} />
+      </div>
+
+      <div className="loading-grid">
+        {[1, 2, 3, 4].map((i) => (
+          <div key={i} className="loading-card">
+            <div className="skeleton skeleton-line short" style={{ height: 12 }} />
+            <div className="skeleton" style={{ height: 72, borderRadius: 18, marginTop: 12 }} />
+          </div>
+        ))}
+      </div>
+
+      <div className="loading-columns">
+        <div className="loading-card">
+          <div className="skeleton skeleton-line short" style={{ height: 14 }} />
+          <div className="skeleton" style={{ height: 320, borderRadius: 20, marginTop: 16 }} />
+        </div>
+        <div className="loading-card">
+          <div className="skeleton skeleton-line short" style={{ height: 14 }} />
+          <div className="skeleton" style={{ height: 320, borderRadius: 20, marginTop: 16 }} />
         </div>
       </div>
     </div>

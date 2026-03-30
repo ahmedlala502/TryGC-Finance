@@ -5,7 +5,7 @@ export function AppShell({ user, children }) {
   const workspace = getWorkspaceConfig();
 
   return (
-    <AppShellClient user={user} workspaceName={workspace.system_name}>
+    <AppShellClient user={user} workspace={workspace}>
       {children}
     </AppShellClient>
   );

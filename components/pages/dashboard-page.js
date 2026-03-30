@@ -7,16 +7,6 @@ const KPI_ICONS = {
       <path strokeLinecap="round" strokeLinejoin="round" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
     </svg>
   ),
-  openDeals: (
-    <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.8">
-      <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-    </svg>
-  ),
-  wonDeals: (
-    <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.8">
-      <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
-    </svg>
-  ),
   pipeline: (
     <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.8">
       <path strokeLinecap="round" strokeLinejoin="round" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
@@ -29,16 +19,7 @@ const KPI_ICONS = {
   )
 };
 
-const STAGE_COLORS = [
-  "#60a5fa",
-  "#34d399",
-  "#f59e0b",
-  "#a78bfa",
-  "#f472b6",
-  "#f87171",
-  "#22c55e",
-  "#38bdf8"
-];
+const STAGE_COLORS = ["#60a5fa", "#34d399", "#f59e0b", "#a78bfa", "#f472b6", "#f87171", "#22c55e", "#38bdf8"];
 
 function clamp(value, min, max) {
   return Math.min(Math.max(value, min), max);
@@ -50,25 +31,75 @@ export function DashboardPage({ summary }) {
   const openDeals = Number(totals.open_deals || 0);
   const attentionCount = Number(health.overdueFollowUps || 0) + Number(health.dueToday || 0);
   const activeStageCount = summary.stageSummary.filter((stage) => Number(stage.deal_count || 0) > 0).length;
-  const topStage = [...summary.stageSummary]
-    .sort((a, b) => Number(b.stage_value || 0) - Number(a.stage_value || 0))[0];
+  const topStage = [...summary.stageSummary].sort((a, b) => Number(b.stage_value || 0) - Number(a.stage_value || 0))[0];
   const topPerformer = summary.topPerformers[0];
   const executionScore = clamp(72 + Number(health.winRate || 0) - attentionCount * 7, 18, 98);
   const todayKey = new Date().toISOString().slice(0, 10);
 
   const priorityQueue = summary.upcomingFollowUps.slice(0, 4).map((deal) => {
     const followUpKey = String(deal.follow_up_date || "").slice(0, 10);
-    const tone = followUpKey && followUpKey < todayKey
-      ? "critical"
-      : deal.priority === "High"
-        ? "watch"
-        : "calm";
-
     return {
       ...deal,
-      tone
+      tone: followUpKey && followUpKey < todayKey ? "critical" : deal.priority === "High" ? "watch" : "calm"
     };
   });
+
+  const stageRibbon = summary.stageSummary
+    .filter((stage) => Number(stage.deal_count || 0) > 0)
+    .slice(0, 4)
+    .map((stage, index) => ({
+      ...stage,
+      accent: stage.color || STAGE_COLORS[index % STAGE_COLORS.length],
+      ratio: totalDeals > 0 ? Math.round((Number(stage.deal_count || 0) / totalDeals) * 100) : 0
+    }));
+
+  const summarySignals = [
+    {
+      label: "Open opportunities",
+      value: openDeals,
+      copy: `${activeStageCount || 0} active lanes are currently populated.`
+    },
+    {
+      label: "Won revenue",
+      value: formatCurrency(totals.won_value || 0),
+      copy: topPerformer ? `${topPerformer.name} is setting the pace right now.` : "Closed wins will start to stack here."
+    },
+    {
+      label: "Action pressure",
+      value: attentionCount,
+      copy: attentionCount ? "Follow-ups need attention before they age further." : "No urgent follow-up debt is building."
+    }
+  ];
+
+  const focusCards = [
+    {
+      label: "Execution score",
+      value: `${executionScore}/100`,
+      badge: executionScore >= 80 ? "Strong" : executionScore >= 60 ? "Stable" : "Watch",
+      tone: executionScore >= 80 ? "good" : executionScore >= 60 ? "warn" : "risk",
+      copy: attentionCount
+        ? `${attentionCount} follow-ups still need attention before the next revenue review.`
+        : "No urgent follow-up debt is piling up right now."
+    },
+    {
+      label: "Pipeline spread",
+      value: topStage ? topStage.name : "No stage data",
+      badge: `${activeStageCount || 0} active lanes`,
+      tone: "good",
+      copy: topStage
+        ? `${formatCurrency(topStage.stage_value || 0)} sits in the strongest stage cluster right now.`
+        : "Add or activate stages to reveal distribution patterns."
+    },
+    {
+      label: "Rep momentum",
+      value: topPerformer ? topPerformer.name : "No ranking yet",
+      badge: topPerformer ? `${topPerformer.won_deals} wins` : "Awaiting wins",
+      tone: topPerformer ? "good" : "warn",
+      copy: topPerformer
+        ? `${formatCurrency(topPerformer.won_value || 0)} closed revenue is setting the pace this cycle.`
+        : "Closed-won activity will surface top reps here automatically."
+    }
+  ];
 
   const kpiCards = [
     {
@@ -78,22 +109,6 @@ export function DashboardPage({ summary }) {
       href: "/deals",
       icon: KPI_ICONS.totalDeals,
       colorClass: "kpi-info"
-    },
-    {
-      label: "Open Deals",
-      value: openDeals,
-      meta: `${attentionCount} need action today`,
-      href: "/deals",
-      icon: KPI_ICONS.openDeals,
-      colorClass: "kpi-warning"
-    },
-    {
-      label: "Won Deals",
-      value: totals.won_deals || 0,
-      meta: `${health.winRate}% close rate`,
-      href: "/performance",
-      icon: KPI_ICONS.wonDeals,
-      colorClass: "kpi-success"
     },
     {
       label: "Pipeline Value",
@@ -110,39 +125,6 @@ export function DashboardPage({ summary }) {
       href: "/performance",
       icon: KPI_ICONS.revenue,
       colorClass: "kpi-success"
-    }
-  ];
-
-  const executiveSignals = [
-    {
-      label: "Execution score",
-      value: `${executionScore}/100`,
-      badge: executionScore >= 80 ? "Strong" : executionScore >= 60 ? "Stable" : "Watch",
-      badgeClass: executionScore >= 80 ? "badge-success" : executionScore >= 60 ? "badge-warning" : "badge-danger",
-      tone: executionScore >= 80 ? "good" : executionScore >= 60 ? "warn" : "risk",
-      copy: attentionCount
-        ? `${attentionCount} follow-ups still need attention before the next revenue review.`
-        : "No urgent follow-up debt is piling up right now."
-    },
-    {
-      label: "Pipeline spread",
-      value: topStage ? topStage.name : "No stage data",
-      badge: `${activeStageCount || 0} active lanes`,
-      badgeClass: "badge-info",
-      tone: "good",
-      copy: topStage
-        ? `${formatCurrency(topStage.stage_value || 0)} sits in the strongest stage cluster right now.`
-        : "Add or activate stages to reveal distribution patterns."
-    },
-    {
-      label: "Rep momentum",
-      value: topPerformer ? topPerformer.name : "No ranking yet",
-      badge: topPerformer ? `${topPerformer.won_deals} wins` : "Awaiting wins",
-      badgeClass: topPerformer ? "badge-success" : "badge-secondary",
-      tone: topPerformer ? "good" : "warn",
-      copy: topPerformer
-        ? `${formatCurrency(topPerformer.won_value || 0)} closed revenue is setting the pace this cycle.`
-        : "Closed-won activity will surface top reps here automatically."
     }
   ];
 
@@ -163,19 +145,19 @@ export function DashboardPage({ summary }) {
       label: "High Priority Open",
       value: health.highPriorityOpen,
       tone: health.highPriorityOpen > 0 ? "warn" : "good",
-      hint: "Open deals tagged high or critical for immediate management visibility."
+      hint: "Open deals tagged high or critical for immediate visibility."
     }
   ];
 
   const quickActions = [
     {
       title: "Open pipeline board",
-      detail: "Re-prioritize opportunities visually and keep momentum moving stage by stage.",
+      detail: "Re-prioritize live opportunities visually and move blocked deals forward faster.",
       href: "/deals/kanban"
     },
     {
       title: "Review import templates",
-      detail: "Standardize spreadsheets before operations, finance, or reps touch the CRM.",
+      detail: "Normalize source files before finance, ops, or reps touch the workspace.",
       href: "/import"
     },
     {
@@ -186,90 +168,149 @@ export function DashboardPage({ summary }) {
   ];
 
   return (
-    <>
+    <div className="dashboard-shell">
       <div className="page-header page-header-tight">
         <div>
           <h1 className="page-title">Revenue Operating System</h1>
           <p className="page-subtitle">
-            Premium, color-coded visibility into pipeline pressure, rep execution, and the next actions protecting revenue.
+            A faster operating layer for pipeline pressure, team execution, and the next actions protecting revenue.
           </p>
         </div>
         <div className="page-header-actions">
           <Link href="/deals/kanban" className="btn btn-outline-secondary btn-sm">
-            Open Board
+            Open board
           </Link>
           <Link href="/deals/new" className="btn btn-primary">
-            + New Deal
+            New deal
           </Link>
         </div>
       </div>
 
-      <section className="hero-panel dashboard-hero">
+      {stageRibbon.length ? (
+        <section className="dashboard-stage-ribbon">
+          {stageRibbon.map((stage) => (
+            <div key={stage.id} className="dashboard-stage-card" style={{ "--stage-accent": stage.accent }}>
+              <div className="dashboard-stage-label">{stage.name}</div>
+              <div className="dashboard-stage-value">{formatCurrency(stage.stage_value || 0)}</div>
+              <div className="dashboard-stage-meta">
+                <span>{stage.deal_count} active deal{Number(stage.deal_count || 0) === 1 ? "" : "s"}</span>
+                <span>{stage.ratio}% of pipeline</span>
+              </div>
+            </div>
+          ))}
+        </section>
+      ) : null}
+
+      <section className="hero-panel dashboard-hero-upscale">
         <div className="dashboard-hero-copy">
           <div className="dashboard-eyebrow">
             <span className="status-dot" />
-            Operating snapshot
+            Live operating view
           </div>
           <h2 className="dashboard-hero-title">
-            {formatCurrency(totals.pipeline_value || 0)} in active pipeline with {openDeals} opportunities still moving.
+            {formatCurrency(totals.pipeline_value || 0)} in active pipeline, with {openDeals} opportunities still moving.
           </h2>
           <p className="dashboard-hero-text">
-            The workspace now surfaces focus signals, urgency, and performance momentum so managers can spot risk sooner and act faster.
+            The shell now surfaces cleaner contrast, stronger hierarchy, and faster controls so managers can catch risk earlier and act with less friction.
           </p>
           <div className="dashboard-hero-actions">
             <Link href="/deals" className="btn btn-primary">
-              Review Deals
+              Review deals
             </Link>
             <Link href="/performance" className="btn btn-outline-secondary">
-              Rep Performance
+              Rep performance
             </Link>
+          </div>
+
+          <div className="dashboard-summary-grid">
+            {summarySignals.map((signal) => (
+              <div key={signal.label} className="dashboard-signal">
+                <div className="dashboard-signal-label">{signal.label}</div>
+                <div className="dashboard-signal-value">{signal.value}</div>
+                <div className="dashboard-signal-copy">{signal.copy}</div>
+              </div>
+            ))}
           </div>
         </div>
 
-        <div className="dashboard-hero-stats">
-          <div className="hero-stat-chip">
-            <span className="hero-stat-label">Won Revenue</span>
-            <strong className="hero-stat-value">{formatCurrency(totals.won_value || 0)}</strong>
-          </div>
-          <div className="hero-stat-chip">
-            <span className="hero-stat-label">Average Open Deal</span>
-            <strong className="hero-stat-value">{formatCurrency(health.averageOpenValue || 0)}</strong>
-          </div>
-          <div className="hero-stat-chip">
-            <span className="hero-stat-label">Action Queue</span>
-            <strong className="hero-stat-value">{attentionCount}</strong>
+        <div className="dashboard-panel">
+          <div className="dashboard-panel-header">
+            <div>
+              <div className="dashboard-panel-title">Immediate queue</div>
+              <div className="dashboard-panel-caption">The next conversations that need a decision.</div>
+            </div>
+            <Link href="/deals" className="btn btn-outline-secondary btn-sm">
+              Open deals
+            </Link>
           </div>
 
-          <div className="hero-priority-panel">
-            <div className="hero-priority-title">Priority queue</div>
-            <div className="hero-priority-list">
-              {priorityQueue.length ? (
-                priorityQueue.map((deal) => (
-                  <Link key={deal.id} href={`/deals/${deal.id}`} className={`hero-priority-item ${deal.tone}`}>
-                    <span className="hero-priority-label">{deal.title}</span>
-                    <span className="hero-priority-meta">
-                      <span>{deal.account_name || "No account"}</span>
-                      <span>{formatDate(deal.follow_up_date)}</span>
+          <div className="dashboard-activity-list">
+            {priorityQueue.length ? (
+              priorityQueue.map((deal) => (
+                <Link key={deal.id} href={`/deals/${deal.id}`} className={`dashboard-activity-item hero-priority-item ${deal.tone}`}>
+                  <div className="dashboard-activity-head">
+                    <div className="dashboard-activity-title">{deal.title}</div>
+                    <span className={`dashboard-focus-badge ${deal.tone === "critical" ? "risk" : deal.tone === "watch" ? "warn" : "good"}`}>
+                      {deal.tone === "critical" ? "Overdue" : deal.priority || "Normal"}
                     </span>
-                  </Link>
-                ))
-              ) : (
-                <div className="hero-priority-empty">No urgent follow-ups are queued right now.</div>
-              )}
+                  </div>
+                  <div className="dashboard-activity-copy">{deal.account_name || "No account assigned yet"}</div>
+                  <div className="dashboard-stage-meta">
+                    <span>{formatDate(deal.follow_up_date)}</span>
+                    <span>Owner follow-up</span>
+                  </div>
+                </Link>
+              ))
+            ) : (
+              <div className="dashboard-activity-item">
+                <div className="dashboard-activity-title">Queue is clear</div>
+                <div className="dashboard-activity-copy">No urgent follow-ups are queued right now.</div>
+              </div>
+            )}
+          </div>
+
+          <div className="dashboard-panel-header">
+            <div>
+              <div className="dashboard-panel-title">Stage momentum</div>
+              <div className="dashboard-panel-caption">Where most value is sitting right now.</div>
             </div>
+          </div>
+
+          <div className="dashboard-activity-list">
+            {summary.stageSummary.slice(0, 3).map((stage, index) => {
+              const pct = totalDeals > 0 ? Math.round((Number(stage.deal_count || 0) / totalDeals) * 100) : 0;
+              const color = stage.color || STAGE_COLORS[index % STAGE_COLORS.length];
+              return (
+                <div key={stage.id} className="dashboard-stage-meter" style={{ "--stage-accent": color }}>
+                  <div className="dashboard-stage-meter-head">
+                    <div className="dashboard-stage-meter-title">
+                      <span className="dashboard-stage-meter-dot" />
+                      <span>{stage.name}</span>
+                    </div>
+                    <div className="dashboard-stage-meter-copy">{pct}%</div>
+                  </div>
+                  <div className="dashboard-stage-meter-copy">
+                    {formatCurrency(stage.stage_value || 0)} across {stage.deal_count} deal{Number(stage.deal_count || 0) === 1 ? "" : "s"}
+                  </div>
+                  <div className="dashboard-stage-meter-progress">
+                    <div className="dashboard-stage-meter-fill" style={{ width: `${pct}%`, background: color }} />
+                  </div>
+                </div>
+              );
+            })}
           </div>
         </div>
       </section>
 
-      <div className="dashboard-insight-grid">
-        {executiveSignals.map((signal) => (
-          <div key={signal.label} className={`insight-card insight-${signal.tone}`}>
-            <div className="insight-card-top">
-              <span className="insight-card-label">{signal.label}</span>
-              <span className={`badge ${signal.badgeClass}`}>{signal.badge}</span>
+      <div className="dashboard-focus-grid">
+        {focusCards.map((signal) => (
+          <div key={signal.label} className="dashboard-focus-card">
+            <div className="dashboard-focus-top">
+              <span className="dashboard-focus-label">{signal.label}</span>
+              <span className={`dashboard-focus-badge ${signal.tone}`}>{signal.badge}</span>
             </div>
-            <div className="insight-card-value">{signal.value}</div>
-            <p className="insight-card-copy">{signal.copy}</p>
+            <div className="dashboard-focus-value">{signal.value}</div>
+            <p className="dashboard-focus-copy">{signal.copy}</p>
           </div>
         ))}
       </div>
@@ -290,7 +331,7 @@ export function DashboardPage({ summary }) {
       <div className="dashboard-main-grid">
         <div className="card">
           <div className="card-header">
-            <span className="card-title">Recent Deals</span>
+            <span className="card-title">Live pipeline</span>
             <Link href="/deals" className="btn btn-outline-secondary btn-sm">
               View all
             </Link>
@@ -318,16 +359,12 @@ export function DashboardPage({ summary }) {
                         <td>
                           <span
                             className="badge badge-secondary table-stage-badge"
-                            style={deal.stage_color ? {
-                              background: `${deal.stage_color}22`,
-                              color: deal.stage_color,
-                              borderColor: `${deal.stage_color}55`
-                            } : undefined}
+                            style={deal.stage_color ? { background: `${deal.stage_color}22`, color: deal.stage_color, borderColor: `${deal.stage_color}55` } : undefined}
                           >
                             {deal.stage_name || deal.status}
                           </span>
                         </td>
-                        <td className="table-muted-cell">{deal.account_name || "—"}</td>
+                        <td className="table-muted-cell">{deal.account_name || "-"}</td>
                         <td className="table-subtle-cell">{formatDate(deal.updated_at)}</td>
                       </tr>
                     ))
@@ -350,7 +387,7 @@ export function DashboardPage({ summary }) {
         <div className="dashboard-side-stack">
           <div className="card">
             <div className="card-header">
-              <span className="card-title">Pipeline Health</span>
+              <span className="card-title">Pressure points</span>
             </div>
             <div className="card-body pipeline-health-list">
               {healthItems.map((item) => (
@@ -367,7 +404,7 @@ export function DashboardPage({ summary }) {
 
           <div className="card">
             <div className="card-header">
-              <span className="card-title">Stage Distribution</span>
+              <span className="card-title">Stage distribution</span>
             </div>
             <div className="card-body stage-list-block">
               {summary.stageSummary.length ? (
@@ -405,33 +442,20 @@ export function DashboardPage({ summary }) {
       <div className="dashboard-secondary-grid">
         <div className="card">
           <div className="card-header">
-            <span className="card-title">Action Queue</span>
+            <span className="card-title">Action queue</span>
           </div>
           <div className="card-body followup-grid">
             {summary.upcomingFollowUps.length ? (
               summary.upcomingFollowUps.map((deal) => {
                 const followUpKey = String(deal.follow_up_date || "").slice(0, 10);
-                const toneClass = followUpKey && followUpKey < todayKey
-                  ? "followup-item-critical"
-                  : deal.priority === "High"
-                    ? "followup-item-watch"
-                    : "";
-
+                const toneClass = followUpKey && followUpKey < todayKey ? "followup-item-critical" : deal.priority === "High" ? "followup-item-watch" : "";
                 return (
                   <Link key={deal.id} href={`/deals/${deal.id}`} className={`followup-item ${toneClass}`.trim()}>
                     <strong className="followup-title">{deal.title}</strong>
                     <span className="followup-account">{deal.account_name || "No account"}</span>
                     <div className="followup-meta-row">
                       <span className="followup-date">{formatDate(deal.follow_up_date)}</span>
-                      <span
-                        className={`badge ${
-                          deal.priority === "High"
-                            ? "badge-danger"
-                            : deal.priority === "Low"
-                              ? "badge-secondary"
-                              : "badge-warning"
-                        }`}
-                      >
+                      <span className={`badge ${deal.priority === "High" ? "badge-danger" : deal.priority === "Low" ? "badge-secondary" : "badge-warning"}`}>
                         {deal.priority || "Medium"}
                       </span>
                     </div>
@@ -449,7 +473,7 @@ export function DashboardPage({ summary }) {
 
         <div className="card">
           <div className="card-header">
-            <span className="card-title">Operating Actions</span>
+            <span className="card-title">Operating actions</span>
           </div>
           <div className="card-body action-stack">
             {quickActions.map((action) => (
@@ -463,7 +487,7 @@ export function DashboardPage({ summary }) {
 
         <div className="card">
           <div className="card-header">
-            <span className="card-title">Top Performers</span>
+            <span className="card-title">Top performers</span>
             <Link href="/performance" className="btn btn-outline-secondary btn-sm">
               Full report
             </Link>
@@ -490,6 +514,6 @@ export function DashboardPage({ summary }) {
           </div>
         </div>
       </div>
-    </>
+    </div>
   );
 }
