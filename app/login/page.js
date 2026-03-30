@@ -38,14 +38,14 @@ export default async function LoginPage({ searchParams }) {
         >
           <div style={{ display: "grid", gap: 18 }}>
             <div style={{ display: "inline-flex", alignItems: "center", gap: 12 }}>
-              <div className="logo-icon" style={{ width: 54, height: 54, fontSize: 24 }}>
-                S
+              <div className="logo-icon brand-mark" style={{ width: 54, height: 54, fontSize: 20 }}>
+                TG
               </div>
-              <div>
-                <div className="logo-text" style={{ color: "var(--text-primary)", fontSize: 28 }}>
+              <div className="brand-copy login-brand-copy">
+                <div className="logo-text login-brand-name">
                   {workspace.system_name}
                 </div>
-                <div style={{ color: "var(--text-secondary)", fontSize: 12, letterSpacing: "0.08em", textTransform: "uppercase" }}>
+                <div className="login-brand-caption">
                   Precision Management for National Operations
                 </div>
               </div>

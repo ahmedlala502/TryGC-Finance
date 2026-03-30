@@ -9,10 +9,10 @@ export function AppShell({ user, children }) {
     <div className="app-layout">
       <aside className="sidebar">
         <div className="sidebar-logo">
-          <div className="logo-icon">S</div>
-          <div>
+          <div className="logo-icon brand-mark">TG</div>
+          <div className="brand-copy">
             <div className="logo-text">{workspace.system_name}</div>
-            <div style={{ color: "rgba(255,255,255,0.5)", fontSize: 11 }}>National Operations</div>
+            <div className="sidebar-tagline">National Operations</div>
           </div>
         </div>
 
