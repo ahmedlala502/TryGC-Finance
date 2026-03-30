@@ -7,6 +7,7 @@ import { AppShell } from "@/components/app-shell";
 export default async function AuditPage() {
   const user = await getSessionUser();
   if (!user) redirect("/login");
+  if (!["admin", "manager"].includes(user.role)) redirect("/");
 
   const rows = getAuditEntries(80);
 

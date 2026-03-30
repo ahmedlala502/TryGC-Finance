@@ -8,6 +8,7 @@ const metrics = ["revenue", "deals", "meetings", "quotations", "opportunities"];
 export default async function TargetsPage({ searchParams }) {
   const user = await getSessionUser();
   if (!user) redirect("/login");
+  const canManageTargets = ["admin", "manager"].includes(user.role);
 
   const params = await searchParams;
   const { month, rows, users } = getTargets(params?.month);
@@ -21,7 +22,7 @@ export default async function TargetsPage({ searchParams }) {
         </div>
       </div>
 
-      <div style={{ display: "grid", gridTemplateColumns: "1.2fr 0.8fr", gap: 20 }}>
+      <div style={{ display: "grid", gridTemplateColumns: canManageTargets ? "1.2fr 0.8fr" : "1fr", gap: 20 }}>
         <div className="card">
           <div className="card-header">
             <span className="card-title">Current Targets · {month}</span>
@@ -50,46 +51,48 @@ export default async function TargetsPage({ searchParams }) {
           </div>
         </div>
 
-        <div className="card">
-          <div className="card-header">
-            <span className="card-title">Set Target</span>
+        {canManageTargets && (
+          <div className="card">
+            <div className="card-header">
+              <span className="card-title">Set Target</span>
+            </div>
+            <div className="card-body">
+              <form method="post" action="/api/targets" style={{ display: "grid", gap: 12 }}>
+                <div className="form-group">
+                  <label>Month</label>
+                  <input name="month" type="month" defaultValue={month} />
+                </div>
+                <div className="form-group">
+                  <label>User</label>
+                  <select name="user_id" defaultValue={users[0]?.id || ""}>
+                    {users.map((item) => (
+                      <option key={item.id} value={item.id}>
+                        {item.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div className="form-group">
+                  <label>Metric</label>
+                  <select name="metric" defaultValue={metrics[0]}>
+                    {metrics.map((metric) => (
+                      <option key={metric} value={metric}>
+                        {metric}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div className="form-group">
+                  <label>Value</label>
+                  <input name="value" type="number" step="0.01" required />
+                </div>
+                <button type="submit" className="btn btn-primary">
+                  Save Target
+                </button>
+              </form>
+            </div>
           </div>
-          <div className="card-body">
-            <form method="post" action="/api/targets" style={{ display: "grid", gap: 12 }}>
-              <div className="form-group">
-                <label>Month</label>
-                <input name="month" type="month" defaultValue={month} />
-              </div>
-              <div className="form-group">
-                <label>User</label>
-                <select name="user_id" defaultValue={users[0]?.id || ""}>
-                  {users.map((item) => (
-                    <option key={item.id} value={item.id}>
-                      {item.name}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              <div className="form-group">
-                <label>Metric</label>
-                <select name="metric" defaultValue={metrics[0]}>
-                  {metrics.map((metric) => (
-                    <option key={metric} value={metric}>
-                      {metric}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              <div className="form-group">
-                <label>Value</label>
-                <input name="value" type="number" step="0.01" required />
-              </div>
-              <button type="submit" className="btn btn-primary">
-                Save Target
-              </button>
-            </form>
-          </div>
-        </div>
+        )}
       </div>
     </AppShell>
   );

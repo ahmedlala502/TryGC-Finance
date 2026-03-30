@@ -18,6 +18,8 @@ export default async function DealDetailPage({ params }) {
   const users = getActiveUsers();
   const accounts = listAccounts({ role: "admin" });
   const settings = getWorkspaceConfig();
+  const isViewer = user.role === "viewer";
+  const canDelete = ["admin", "manager"].includes(user.role);
 
   return (
     <AppShell user={user}>
@@ -28,20 +30,18 @@ export default async function DealDetailPage({ params }) {
             {deal.account_name || "No account"} · {deal.stage_name || deal.status}
           </p>
         </div>
-        <div style={{ display: "flex", gap: 12 }}>
-          <form method="post" action={`/api/deals/${deal.id}/status`}>
-            <input type="hidden" name="action" value="won" />
-            <button type="submit" className="btn btn-success btn-sm">
-              Mark Won
-            </button>
-          </form>
-          <form method="post" action={`/api/deals/${deal.id}/status`}>
-            <input type="hidden" name="action" value="lost" />
-            <button type="submit" className="btn btn-warning btn-sm">
-              Mark Lost
-            </button>
-          </form>
-        </div>
+        {!isViewer && (
+          <div style={{ display: "flex", gap: 12 }}>
+            <form method="post" action={`/api/deals/${deal.id}/status`}>
+              <input type="hidden" name="action" value="won" />
+              <button type="submit" className="btn btn-success btn-sm">Mark Won</button>
+            </form>
+            <form method="post" action={`/api/deals/${deal.id}/status`}>
+              <input type="hidden" name="action" value="lost" />
+              <button type="submit" className="btn btn-warning btn-sm">Mark Lost</button>
+            </form>
+          </div>
+        )}
       </div>
 
       <div style={{ display: "grid", gridTemplateColumns: "1.4fr 0.8fr", gap: 20 }}>
@@ -50,15 +50,16 @@ export default async function DealDetailPage({ params }) {
             <span className="card-title">Deal Details</span>
           </div>
           <div className="card-body">
+            {isViewer && <div className="readonly-notice">👁 You have view-only access. Contact an admin to make changes.</div>}
             <form method="post" action={`/api/deals/${deal.id}`} style={{ display: "grid", gap: 16 }}>
               <div className="form-row">
                 <div className="form-group">
                   <label>Deal Title</label>
-                  <input name="title" defaultValue={deal.title} required />
+                  <input name="title" defaultValue={deal.title} required disabled={isViewer} />
                 </div>
                 <div className="form-group">
                   <label>Account</label>
-                  <select name="account_id" defaultValue={deal.account_id || ""}>
+                  <select name="account_id" defaultValue={deal.account_id || ""} disabled={isViewer}>
                     <option value="">Select account</option>
                     {accounts.map((account) => (
                       <option key={account.id} value={account.id}>
@@ -72,29 +73,29 @@ export default async function DealDetailPage({ params }) {
               <div className="form-row">
                 <div className="form-group">
                   <label>Contact</label>
-                  <input name="contact_name" defaultValue={deal.contact_name || ""} />
+                  <input name="contact_name" defaultValue={deal.contact_name || ""} disabled={isViewer} />
                 </div>
                 <div className="form-group">
                   <label>Email</label>
-                  <input name="email" type="email" defaultValue={deal.email || ""} />
+                  <input name="email" type="email" defaultValue={deal.email || ""} disabled={isViewer} />
                 </div>
               </div>
 
               <div className="form-row">
                 <div className="form-group">
                   <label>Phone</label>
-                  <input name="phone" defaultValue={deal.phone || ""} />
+                  <input name="phone" defaultValue={deal.phone || ""} disabled={isViewer} />
                 </div>
                 <div className="form-group">
                   <label>Expected Value</label>
-                  <input name="expected_value" type="number" step="0.01" defaultValue={deal.expected_value || 0} />
+                  <input name="expected_value" type="number" step="0.01" defaultValue={deal.expected_value || 0} disabled={isViewer} />
                 </div>
               </div>
 
               <div className="form-row">
                 <div className="form-group">
                   <label>Business Type</label>
-                  <select name="business_type" defaultValue={deal.business_type || settings.business_types[0] || ""}>
+                  <select name="business_type" defaultValue={deal.business_type || settings.business_types[0] || ""} disabled={isViewer}>
                     {settings.business_types.map((item) => (
                       <option key={item} value={item}>
                         {item}
@@ -104,7 +105,7 @@ export default async function DealDetailPage({ params }) {
                 </div>
                 <div className="form-group">
                   <label>Source</label>
-                  <select name="source" defaultValue={deal.source || settings.lead_sources[0] || ""}>
+                  <select name="source" defaultValue={deal.source || settings.lead_sources[0] || ""} disabled={isViewer}>
                     {settings.lead_sources.map((item) => (
                       <option key={item} value={item}>
                         {item}
@@ -117,7 +118,7 @@ export default async function DealDetailPage({ params }) {
               <div className="form-row">
                 <div className="form-group">
                   <label>Stage</label>
-                  <select name="stage_id" defaultValue={deal.stage_id || ""}>
+                  <select name="stage_id" defaultValue={deal.stage_id || ""} disabled={isViewer}>
                     {stages.map((stage) => (
                       <option key={stage.id} value={stage.id}>
                         {stage.name}
@@ -127,7 +128,7 @@ export default async function DealDetailPage({ params }) {
                 </div>
                 <div className="form-group">
                   <label>Assigned To</label>
-                  <select name="assigned_to" defaultValue={deal.assigned_to || user.id}>
+                  <select name="assigned_to" defaultValue={deal.assigned_to || user.id} disabled={isViewer}>
                     {users.map((item) => (
                       <option key={item.id} value={item.id}>
                         {item.name}
@@ -140,18 +141,18 @@ export default async function DealDetailPage({ params }) {
               <div className="form-row">
                 <div className="form-group">
                   <label>Expected Close Date</label>
-                  <input name="expected_close_date" type="date" defaultValue={deal.expected_close_date || ""} />
+                  <input name="expected_close_date" type="date" defaultValue={deal.expected_close_date || ""} disabled={isViewer} />
                 </div>
                 <div className="form-group">
                   <label>Follow Up Date</label>
-                  <input name="follow_up_date" type="date" defaultValue={deal.follow_up_date || ""} />
+                  <input name="follow_up_date" type="date" defaultValue={deal.follow_up_date || ""} disabled={isViewer} />
                 </div>
               </div>
 
               <div className="form-row">
                 <div className="form-group">
                   <label>Priority</label>
-                  <select name="priority" defaultValue={deal.priority || (settings.priorities.includes("Medium") ? "Medium" : settings.priorities[0])}>
+                  <select name="priority" defaultValue={deal.priority || (settings.priorities.includes("Medium") ? "Medium" : settings.priorities[0])} disabled={isViewer}>
                     {settings.priorities.map((priority) => (
                       <option key={priority} value={priority}>
                         {priority}
@@ -161,7 +162,7 @@ export default async function DealDetailPage({ params }) {
                 </div>
                 <div className="form-group">
                   <label>Market</label>
-                  <select name="market" defaultValue={deal.market || settings.markets[0] || ""}>
+                  <select name="market" defaultValue={deal.market || settings.markets[0] || ""} disabled={isViewer}>
                     {settings.markets.map((market) => (
                       <option key={market} value={market}>
                         {market}
@@ -173,19 +174,23 @@ export default async function DealDetailPage({ params }) {
 
               <div className="form-group">
                 <label>Notes</label>
-                <textarea name="notes" rows={5} defaultValue={deal.notes || ""} />
+                <textarea name="notes" rows={5} defaultValue={deal.notes || ""} disabled={isViewer} />
               </div>
 
               <CustomFieldInputs fields={customFields} />
 
-              <div style={{ display: "flex", gap: 12 }}>
-                <button type="submit" className="btn btn-primary">
-                  Save Changes
-                </button>
-                <button type="submit" name="action" value="delete" className="btn btn-danger">
-                  Delete Deal
-                </button>
-              </div>
+              {!isViewer && (
+                <div style={{ display: "flex", gap: 12 }}>
+                  <button type="submit" className="btn btn-primary">
+                    Save Changes
+                  </button>
+                  {canDelete && (
+                    <button type="submit" name="action" value="delete" className="btn btn-danger">
+                      Delete Deal
+                    </button>
+                  )}
+                </div>
+              )}
             </form>
           </div>
         </div>

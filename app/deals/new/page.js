@@ -8,6 +8,7 @@ import { CustomFieldInputs } from "@/components/custom-field-inputs";
 export default async function NewDealPage() {
   const user = await getSessionUser();
   if (!user) redirect("/login");
+  if (user.role === "viewer") redirect("/deals");
 
   const stages = getActiveStages().filter((stage) => stage.type === "open");
   const users = getActiveUsers();

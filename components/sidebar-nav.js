@@ -74,33 +74,36 @@ const Icons = {
   ),
 };
 
-const navGroups = [
+const NAV_GROUPS = [
   {
     title: "Workspace",
+    roles: ["admin", "manager", "sales", "viewer"],
     items: [
-      { href: "/", label: "Dashboard", icon: Icons.dashboard },
-      { href: "/deals", label: "Deals", icon: Icons.deals },
-      { href: "/deals/kanban", label: "Kanban", icon: Icons.kanban },
-      { href: "/accounts", label: "Accounts", icon: Icons.accounts }
+      { href: "/", label: "Dashboard", icon: "dashboard" },
+      { href: "/deals", label: "Deals", icon: "deals" },
+      { href: "/deals/kanban", label: "Kanban", icon: "kanban" },
+      { href: "/accounts", label: "Accounts", icon: "accounts" }
     ]
   },
   {
     title: "Operations",
+    roles: ["admin", "manager", "sales"],
     items: [
-      { href: "/performance", label: "Performance", icon: Icons.performance },
-      { href: "/targets", label: "Targets", icon: Icons.targets },
-      { href: "/import", label: "Templates", icon: Icons.import },
-      { href: "/export", label: "Export", icon: Icons.export },
-      { href: "/audit", label: "Audit", icon: Icons.audit }
+      { href: "/performance", label: "Performance", icon: "performance" },
+      { href: "/targets", label: "Targets", icon: "targets" },
+      { href: "/import", label: "Templates", icon: "import" },
+      { href: "/export", label: "Export", icon: "export" },
+      { href: "/audit", label: "Audit", icon: "audit" }
     ]
   },
   {
     title: "Admin",
+    roles: ["admin", "manager"],
     items: [
-      { href: "/users", label: "Users", icon: Icons.users },
-      { href: "/stages", label: "Stages", icon: Icons.stages },
-      { href: "/custom-fields", label: "Fields", icon: Icons.fields },
-      { href: "/settings", label: "Settings", icon: Icons.settings }
+      { href: "/users", label: "Users", icon: "users", adminOnly: true },
+      { href: "/stages", label: "Stages", icon: "stages" },
+      { href: "/custom-fields", label: "Fields", icon: "fields" },
+      { href: "/settings", label: "Settings", icon: "settings" }
     ]
   }
 ];
@@ -110,26 +113,34 @@ function isActive(pathname, href) {
   return pathname === href || pathname.startsWith(`${href}/`);
 }
 
-export function SidebarNav() {
+export function SidebarNav({ role = "viewer" }) {
   const pathname = usePathname();
+
+  const visibleGroups = NAV_GROUPS.filter((g) => g.roles.includes(role));
 
   return (
     <nav className="sidebar-nav">
-      {navGroups.map((group) => (
-        <div key={group.title} className="nav-group">
-          <div className="nav-group-title">{group.title}</div>
-          {group.items.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              className={`nav-item ${isActive(pathname, item.href) ? "active" : ""}`}
-            >
-              <span className="nav-icon">{item.icon}</span>
-              <span className="nav-label">{item.label}</span>
-            </Link>
-          ))}
-        </div>
-      ))}
+      {visibleGroups.map((group) => {
+        const visibleItems = group.items.filter(
+          (item) => !(item.adminOnly && role !== "admin")
+        );
+        if (!visibleItems.length) return null;
+        return (
+          <div key={group.title} className="nav-group">
+            <div className="nav-group-title">{group.title}</div>
+            {visibleItems.map((item) => (
+              <Link
+                key={item.href}
+                href={item.href}
+                className={`nav-item ${isActive(pathname, item.href) ? "active" : ""}`}
+              >
+                <span className="nav-icon">{Icons[item.icon]}</span>
+                <span className="nav-label">{item.label}</span>
+              </Link>
+            ))}
+          </div>
+        );
+      })}
     </nav>
   );
 }
