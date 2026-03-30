@@ -11,5 +11,13 @@ uploads/
 .env.development.local
 .env.test.local
 .env.production.local
+.vercel/
 
-.vercel
+# Legacy Flask files
+app.py
+models.py
+seed.py
+requirements.txt
+templates/
+static/
+New folder/

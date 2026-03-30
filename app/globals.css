@@ -1443,3 +1443,275 @@ input[type="color"] {
   .sidebar, .topbar, .filter-bar, .bulk-bar { display: none !important; }
   .main-wrapper { margin-left: 0 !important; }
 }
+
+/* =====================================================================
+   Sidebar Collapse Button
+   ===================================================================== */
+.sidebar-collapse-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--sidebar-text);
+  padding: 6px;
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s, color 0.15s;
+  flex-shrink: 0;
+  margin-left: auto;
+}
+
+.sidebar-collapse-btn:hover {
+  background: var(--sidebar-hover);
+  color: #fff;
+}
+
+.sidebar.collapsed .sidebar-collapse-btn {
+  margin-left: 0;
+  width: 100%;
+  justify-content: center;
+}
+
+/* =====================================================================
+   Topbar Enhancements
+   ===================================================================== */
+.topbar-title-area {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.topbar-breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  color: var(--text-muted);
+  letter-spacing: 0.03em;
+}
+
+.topbar-breadcrumb-sep {
+  opacity: 0.5;
+}
+
+.topbar-breadcrumb-current {
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.topbar-page-name {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.topbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-left: auto;
+  flex-shrink: 0;
+}
+
+.topbar-search-form {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.topbar-search-icon {
+  position: absolute;
+  left: 10px;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  pointer-events: none;
+}
+
+.topbar-search-input {
+  width: 240px;
+  padding: 8px 12px 8px 32px;
+  border: 1px solid var(--border-color);
+  border-radius: 20px;
+  font-size: 13px;
+  background: rgba(255,255,255,0.75);
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s, width 0.2s;
+}
+
+.topbar-search-input:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(29,122,114,0.12);
+  width: 300px;
+  background: #fff;
+}
+
+.topbar-new-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  white-space: nowrap;
+}
+
+.topbar-icon-btn {
+  position: relative;
+  background: none;
+  border: none;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: var(--text-secondary);
+  transition: background 0.15s, color 0.15s;
+}
+
+.topbar-icon-btn:hover {
+  background: var(--border-color);
+  color: var(--text-primary);
+}
+
+.topbar-notif-dot {
+  position: absolute;
+  top: 7px;
+  right: 7px;
+  width: 7px;
+  height: 7px;
+  background: var(--danger);
+  border-radius: 50%;
+  border: 1.5px solid #fff;
+}
+
+.topbar-user-chip {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 10px 4px 4px;
+  border: 1px solid var(--border-color);
+  border-radius: 20px;
+  background: rgba(255,255,255,0.8);
+  cursor: default;
+}
+
+.topbar-user-avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--primary);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.topbar-user-info {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.topbar-user-name {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-primary);
+  white-space: nowrap;
+}
+
+.topbar-user-role {
+  font-size: 10px;
+  color: var(--text-muted);
+  text-transform: capitalize;
+  letter-spacing: 0.04em;
+}
+
+/* =====================================================================
+   Dashboard KPI Grid & Cards
+   ===================================================================== */
+.dashboard-kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 16px;
+}
+
+@media (max-width: 1280px) {
+  .dashboard-kpi-grid { grid-template-columns: repeat(3, 1fr); }
+}
+
+@media (max-width: 900px) {
+  .dashboard-kpi-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+.kpi-card.kpi-primary .kpi-icon  { background: rgba(29,122,114,0.1);  color: var(--primary); }
+.kpi-card.kpi-success .kpi-icon  { background: rgba(47,158,111,0.1);  color: var(--success); }
+.kpi-card.kpi-warning .kpi-icon  { background: rgba(211,138,42,0.12); color: var(--warning-dark); }
+.kpi-card.kpi-info    .kpi-icon  { background: rgba(47,111,144,0.1);  color: var(--info); }
+.kpi-card.kpi-danger  .kpi-icon  { background: rgba(239,68,68,0.1);   color: var(--danger); }
+
+.kpi-card .kpi-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+/* =====================================================================
+   Dashboard Hero Stat Chips
+   ===================================================================== */
+.hero-stat-chip {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  background: rgba(255,255,255,0.7);
+  border: 1px solid rgba(226,232,240,0.9);
+  border-radius: 12px;
+  padding: 12px 16px;
+}
+
+.hero-stat-label {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.hero-stat-value {
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--text-primary);
+  letter-spacing: -0.02em;
+}
+
+/* =====================================================================
+   Dashboard Follow-up Items
+   ===================================================================== */
+.followup-item {
+  display: grid;
+  gap: 3px;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 11px 13px;
+  text-decoration: none;
+  color: inherit;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.followup-item:hover {
+  border-color: var(--primary);
+  box-shadow: 0 2px 8px rgba(29,122,114,0.1);
+  color: inherit;
+}
