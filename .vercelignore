@@ -1,0 +1,13 @@
+node_modules
+.next
+__pycache__
+uploads
+*.log
+app.py
+models.py
+requirements.txt
+seed.py
+static
+templates
+New folder
+!trygc_finance_sales_dashboard.db

@@ -1,0 +1,24 @@
+node_modules/
+.next/
+__pycache__/
+uploads/
+*.log
+*.sqlite
+*.sqlite3
+*.db
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+.vercel/
+.claude/
+
+# Legacy Flask files
+app.py
+models.py
+seed.py
+requirements.txt
+templates/
+static/
+New folder/
