@@ -1,5 +1,5 @@
 /* =====================================================================
-   SalesPro CRM - Main JavaScript
+   TryGc - Finance & Sales Dashboard - Main JavaScript
    ===================================================================== */
 
 /* ---- Sidebar Toggle ---- */

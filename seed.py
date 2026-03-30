@@ -53,7 +53,7 @@ DEAL_TITLES = [
 ]
 
 SETTINGS_DATA = [
-    {'key': 'system_name',   'value': 'SalesPro CRM'},
+    {'key': 'system_name',   'value': 'TryGc - Finance & Sales Dashboard'},
     {'key': 'currency',      'value': 'USD'},
     {'key': 'date_format',   'value': '%Y-%m-%d'},
     {'key': 'markets',       'value': json.dumps(['Local', 'International', 'MENA', 'Europe'])},

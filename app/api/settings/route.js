@@ -19,7 +19,7 @@ export async function POST(request) {
 
   const formData = await request.formData();
   const values = {
-    system_name: String(formData.get("system_name") || "SalesPro CRM"),
+    system_name: String(formData.get("system_name") || "TryGc - Finance & Sales Dashboard"),
     currency: String(formData.get("currency") || "USD"),
     date_format: String(formData.get("date_format") || "%Y-%m-%d"),
     markets: toJsonList(formData.get("markets")),
