@@ -1,12 +1,14 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { usePathname } from "next/navigation";
 import { Sidebar } from "@/components/sidebar";
 import { Topbar } from "@/components/topbar";
 
 const SIDEBAR_STORAGE_KEY = "trygc-sidebar-collapsed";
 
 export function AppShellClient({ user, workspaceName, children }) {
+  const pathname = usePathname();
   const [collapsed, setCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
 
@@ -17,6 +19,10 @@ export function AppShellClient({ user, workspaceName, children }) {
       setCollapsed(false);
     }
   }, []);
+
+  useEffect(() => {
+    setMobileOpen(false);
+  }, [pathname]);
 
   useEffect(() => {
     document.body.style.overflow = mobileOpen ? "hidden" : "";
@@ -51,6 +57,7 @@ export function AppShellClient({ user, workspaceName, children }) {
       <div className="main-wrapper">
         <Topbar
           user={user}
+          workspaceName={workspaceName}
           onOpenSidebar={() => setMobileOpen(true)}
           onToggleSidebarCollapse={toggleCollapsed}
         />

@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { SidebarNav } from "@/components/sidebar-nav";
 
 const ChevronLeft = () => (
@@ -46,6 +47,29 @@ export function Sidebar({
       </div>
 
       <SidebarNav role={user.role} onNavigate={onCloseMobile} />
+
+      <div className="sidebar-spotlight">
+        <span className="sidebar-spotlight-label">Premium workflow</span>
+        <strong className="sidebar-spotlight-title">Ops command center</strong>
+        <span className="sidebar-spotlight-copy">
+          Faster navigation, cleaner reporting, and color-coded execution views are now built in.
+        </span>
+
+        <div className="sidebar-quick-actions">
+          {user.role !== "viewer" ? (
+            <Link href="/deals/new" className="sidebar-quick-action" onClick={onCloseMobile}>
+              + New deal
+            </Link>
+          ) : null}
+          <Link
+            href={user.role === "viewer" ? "/accounts" : "/export"}
+            className="sidebar-quick-action"
+            onClick={onCloseMobile}
+          >
+            {user.role === "viewer" ? "Accounts" : "Export pack"}
+          </Link>
+        </div>
+      </div>
 
       <div className="sidebar-footer">
         <div className="sidebar-user">

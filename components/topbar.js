@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
 
@@ -75,9 +76,11 @@ const MenuIcon = () => (
   </svg>
 );
 
-export function Topbar({ user, onOpenSidebar, onToggleSidebarCollapse }) {
+export function Topbar({ user, workspaceName, onOpenSidebar, onToggleSidebarCollapse }) {
   const pathname = usePathname();
   const searchParams = useSearchParams();
+  const searchInputRef = useRef(null);
+  const [now, setNow] = useState(() => new Date());
   const title = getPageTitle(pathname);
   const description = getPageDescription(pathname);
   const canCreateDeal = user.role !== "viewer";
@@ -86,6 +89,48 @@ export function Topbar({ user, onOpenSidebar, onToggleSidebarCollapse }) {
   const searchPlaceholder = pathname.startsWith("/accounts")
     ? "Search accounts, companies, contacts..."
     : "Search deals, contacts, email...";
+  const workspaceLabel = String(workspaceName || "TryGC Revenue OS")
+    .replace(/\s*-\s*/g, " ")
+    .split(/\s+/)
+    .slice(0, 3)
+    .join(" ");
+
+  useEffect(() => {
+    const timer = window.setInterval(() => setNow(new Date()), 60_000);
+    return () => window.clearInterval(timer);
+  }, []);
+
+  useEffect(() => {
+    function handleKeydown(event) {
+      const target = event.target;
+      const isTypingTarget =
+        target instanceof HTMLElement &&
+        (target.tagName === "INPUT" || target.tagName === "TEXTAREA" || target.isContentEditable);
+
+      if (event.key === "/" && !isTypingTarget && !event.metaKey && !event.ctrlKey && !event.altKey) {
+        event.preventDefault();
+        searchInputRef.current?.focus();
+      }
+
+      if (event.key === "Escape" && document.activeElement === searchInputRef.current) {
+        searchInputRef.current.blur();
+      }
+    }
+
+    window.addEventListener("keydown", handleKeydown);
+    return () => window.removeEventListener("keydown", handleKeydown);
+  }, []);
+
+  const nowLabel = useMemo(
+    () =>
+      new Intl.DateTimeFormat("en", {
+        month: "short",
+        day: "numeric",
+        hour: "numeric",
+        minute: "2-digit"
+      }).format(now),
+    [now]
+  );
 
   return (
     <header className="topbar">
@@ -100,7 +145,7 @@ export function Topbar({ user, onOpenSidebar, onToggleSidebarCollapse }) {
 
       <div className="topbar-title-area">
         <div className="topbar-breadcrumb">
-          <span>TryGC</span>
+          <span>{workspaceLabel}</span>
           <span className="topbar-breadcrumb-sep">/</span>
           <span className="topbar-breadcrumb-current">{title}</span>
         </div>
@@ -123,17 +168,23 @@ export function Topbar({ user, onOpenSidebar, onToggleSidebarCollapse }) {
         <form action={searchAction} method="get" className="topbar-search-form">
           <span className="topbar-search-icon"><SearchIcon /></span>
           <input
+            ref={searchInputRef}
             type="search"
             name="search"
             defaultValue={searchValue}
             placeholder={searchPlaceholder}
             className="topbar-search-input"
+            aria-label="Search workspace"
           />
+          <span className="topbar-search-kbd" aria-hidden="true">/</span>
         </form>
 
-        <div className="topbar-status-chip">
+        <div className="topbar-status-chip topbar-status-chip-rich">
           <span className="status-dot" />
-          <span>Dark workspace</span>
+          <div className="topbar-status-copy">
+            <span className="topbar-status-label">Secure sync</span>
+            <span className="topbar-status-value">{nowLabel}</span>
+          </div>
         </div>
 
         {canCreateDeal && (
@@ -143,10 +194,10 @@ export function Topbar({ user, onOpenSidebar, onToggleSidebarCollapse }) {
           </Link>
         )}
 
-        <button className="topbar-icon-btn" title="Notifications" aria-label="Notifications">
+        <Link href="/audit" className="topbar-icon-btn" title="Open audit trail" aria-label="Open audit trail">
           <BellIcon />
           <span className="topbar-notif-dot" />
-        </button>
+        </Link>
 
         <div className="topbar-user-chip">
           <div className="topbar-user-avatar">

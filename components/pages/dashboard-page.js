@@ -4,27 +4,27 @@ import { formatCurrency, formatDate } from "@/lib/format";
 const KPI_ICONS = {
   totalDeals: (
     <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.8">
-      <path strokeLinecap="round" strokeLinejoin="round" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+      <path strokeLinecap="round" strokeLinejoin="round" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
     </svg>
   ),
   openDeals: (
     <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.8">
-      <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+      <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
     </svg>
   ),
   wonDeals: (
     <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.8">
-      <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"/>
+      <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
     </svg>
   ),
   pipeline: (
     <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.8">
-      <path strokeLinecap="round" strokeLinejoin="round" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/>
+      <path strokeLinecap="round" strokeLinejoin="round" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
     </svg>
   ),
   revenue: (
     <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.8">
-      <path strokeLinecap="round" strokeLinejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+      <path strokeLinecap="round" strokeLinejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
     </svg>
   )
 };
@@ -40,23 +40,49 @@ const STAGE_COLORS = [
   "#38bdf8"
 ];
 
+function clamp(value, min, max) {
+  return Math.min(Math.max(value, min), max);
+}
+
 export function DashboardPage({ summary }) {
   const { totals, health } = summary;
-  const totalDeals = totals.total_deals || 0;
+  const totalDeals = Number(totals.total_deals || 0);
+  const openDeals = Number(totals.open_deals || 0);
+  const attentionCount = Number(health.overdueFollowUps || 0) + Number(health.dueToday || 0);
+  const activeStageCount = summary.stageSummary.filter((stage) => Number(stage.deal_count || 0) > 0).length;
+  const topStage = [...summary.stageSummary]
+    .sort((a, b) => Number(b.stage_value || 0) - Number(a.stage_value || 0))[0];
+  const topPerformer = summary.topPerformers[0];
+  const executionScore = clamp(72 + Number(health.winRate || 0) - attentionCount * 7, 18, 98);
+  const todayKey = new Date().toISOString().slice(0, 10);
+
+  const priorityQueue = summary.upcomingFollowUps.slice(0, 4).map((deal) => {
+    const followUpKey = String(deal.follow_up_date || "").slice(0, 10);
+    const tone = followUpKey && followUpKey < todayKey
+      ? "critical"
+      : deal.priority === "High"
+        ? "watch"
+        : "calm";
+
+    return {
+      ...deal,
+      tone
+    };
+  });
 
   const kpiCards = [
     {
       label: "Total Deals",
-      value: totals.total_deals || 0,
-      meta: `${health.highPriorityOpen} high priority open`,
+      value: totalDeals,
+      meta: `${activeStageCount || 0} active stages represented`,
       href: "/deals",
       icon: KPI_ICONS.totalDeals,
       colorClass: "kpi-info"
     },
     {
       label: "Open Deals",
-      value: totals.open_deals || 0,
-      meta: `${health.dueToday} due today`,
+      value: openDeals,
+      meta: `${attentionCount} need action today`,
       href: "/deals",
       icon: KPI_ICONS.openDeals,
       colorClass: "kpi-warning"
@@ -71,19 +97,52 @@ export function DashboardPage({ summary }) {
     },
     {
       label: "Pipeline Value",
-      value: formatCurrency(totals.pipeline_value),
-      meta: `${formatCurrency(health.averageOpenValue)} avg open deal`,
+      value: formatCurrency(totals.pipeline_value || 0),
+      meta: `${formatCurrency(health.averageOpenValue || 0)} avg open deal`,
       href: "/deals",
       icon: KPI_ICONS.pipeline,
       colorClass: "kpi-primary"
     },
     {
       label: "Won Revenue",
-      value: formatCurrency(totals.won_value),
-      meta: `${totals.lost_deals || 0} lost deals`,
+      value: formatCurrency(totals.won_value || 0),
+      meta: topPerformer ? `${topPerformer.name} currently leads` : `${totals.lost_deals || 0} lost deals`,
       href: "/performance",
       icon: KPI_ICONS.revenue,
       colorClass: "kpi-success"
+    }
+  ];
+
+  const executiveSignals = [
+    {
+      label: "Execution score",
+      value: `${executionScore}/100`,
+      badge: executionScore >= 80 ? "Strong" : executionScore >= 60 ? "Stable" : "Watch",
+      badgeClass: executionScore >= 80 ? "badge-success" : executionScore >= 60 ? "badge-warning" : "badge-danger",
+      tone: executionScore >= 80 ? "good" : executionScore >= 60 ? "warn" : "risk",
+      copy: attentionCount
+        ? `${attentionCount} follow-ups still need attention before the next revenue review.`
+        : "No urgent follow-up debt is piling up right now."
+    },
+    {
+      label: "Pipeline spread",
+      value: topStage ? topStage.name : "No stage data",
+      badge: `${activeStageCount || 0} active lanes`,
+      badgeClass: "badge-info",
+      tone: "good",
+      copy: topStage
+        ? `${formatCurrency(topStage.stage_value || 0)} sits in the strongest stage cluster right now.`
+        : "Add or activate stages to reveal distribution patterns."
+    },
+    {
+      label: "Rep momentum",
+      value: topPerformer ? topPerformer.name : "No ranking yet",
+      badge: topPerformer ? `${topPerformer.won_deals} wins` : "Awaiting wins",
+      badgeClass: topPerformer ? "badge-success" : "badge-secondary",
+      tone: topPerformer ? "good" : "warn",
+      copy: topPerformer
+        ? `${formatCurrency(topPerformer.won_value || 0)} closed revenue is setting the pace this cycle.`
+        : "Closed-won activity will surface top reps here automatically."
     }
   ];
 
@@ -91,37 +150,37 @@ export function DashboardPage({ summary }) {
     {
       label: "Win Rate",
       value: `${health.winRate}%`,
-      tone: "good",
-      hint: "Based on closed won and lost deals."
+      tone: Number(health.winRate || 0) >= 50 ? "good" : "warn",
+      hint: "Based on all closed won and lost opportunities."
     },
     {
       label: "Overdue Follow-Ups",
       value: health.overdueFollowUps,
       tone: health.overdueFollowUps > 0 ? "risk" : "good",
-      hint: "Open deals whose follow-up date has already passed."
+      hint: "Deals that have already missed the next agreed customer touchpoint."
     },
     {
-      label: "Due Today",
-      value: health.dueToday,
-      tone: "warn",
-      hint: "Open deals that still need same-day action."
+      label: "High Priority Open",
+      value: health.highPriorityOpen,
+      tone: health.highPriorityOpen > 0 ? "warn" : "good",
+      hint: "Open deals tagged high or critical for immediate management visibility."
     }
   ];
 
   const quickActions = [
     {
       title: "Open pipeline board",
-      detail: "Move deals between stages without leaving the workflow.",
+      detail: "Re-prioritize opportunities visually and keep momentum moving stage by stage.",
       href: "/deals/kanban"
     },
     {
       title: "Review import templates",
-      detail: "Keep workbook ingestion clean before sales ops touches data.",
+      detail: "Standardize spreadsheets before operations, finance, or reps touch the CRM.",
       href: "/import"
     },
     {
-      title: "Export reporting pack",
-      detail: "Send a current snapshot of deals, users, and performance.",
+      title: "Export executive pack",
+      detail: "Ship a polished reporting snapshot of deals, users, and performance in seconds.",
       href: "/export"
     }
   ];
@@ -130,9 +189,9 @@ export function DashboardPage({ summary }) {
     <>
       <div className="page-header page-header-tight">
         <div>
-          <h1 className="page-title">Revenue Control Center</h1>
+          <h1 className="page-title">Revenue Operating System</h1>
           <p className="page-subtitle">
-            A dark-only operating view for pipeline pressure, rep output, and the next customer actions that matter.
+            Premium, color-coded visibility into pipeline pressure, rep execution, and the next actions protecting revenue.
           </p>
         </div>
         <div className="page-header-actions">
@@ -147,13 +206,15 @@ export function DashboardPage({ summary }) {
 
       <section className="hero-panel dashboard-hero">
         <div className="dashboard-hero-copy">
-          <div className="dashboard-eyebrow">Operating snapshot</div>
+          <div className="dashboard-eyebrow">
+            <span className="status-dot" />
+            Operating snapshot
+          </div>
           <h2 className="dashboard-hero-title">
-            {formatCurrency(totals.pipeline_value)} active pipeline with {totals.open_deals || 0} open deals still in motion.
+            {formatCurrency(totals.pipeline_value || 0)} in active pipeline with {openDeals} opportunities still moving.
           </h2>
           <p className="dashboard-hero-text">
-            This view prioritizes deal pressure, follow-up risk, and rep momentum so the team can decide where to intervene
-            before revenue slips.
+            The workspace now surfaces focus signals, urgency, and performance momentum so managers can spot risk sooner and act faster.
           </p>
           <div className="dashboard-hero-actions">
             <Link href="/deals" className="btn btn-primary">
@@ -168,18 +229,50 @@ export function DashboardPage({ summary }) {
         <div className="dashboard-hero-stats">
           <div className="hero-stat-chip">
             <span className="hero-stat-label">Won Revenue</span>
-            <strong className="hero-stat-value">{formatCurrency(totals.won_value)}</strong>
+            <strong className="hero-stat-value">{formatCurrency(totals.won_value || 0)}</strong>
           </div>
           <div className="hero-stat-chip">
             <span className="hero-stat-label">Average Open Deal</span>
-            <strong className="hero-stat-value">{formatCurrency(health.averageOpenValue)}</strong>
+            <strong className="hero-stat-value">{formatCurrency(health.averageOpenValue || 0)}</strong>
           </div>
           <div className="hero-stat-chip">
-            <span className="hero-stat-label">Overdue Follow-Ups</span>
-            <strong className="hero-stat-value">{health.overdueFollowUps}</strong>
+            <span className="hero-stat-label">Action Queue</span>
+            <strong className="hero-stat-value">{attentionCount}</strong>
+          </div>
+
+          <div className="hero-priority-panel">
+            <div className="hero-priority-title">Priority queue</div>
+            <div className="hero-priority-list">
+              {priorityQueue.length ? (
+                priorityQueue.map((deal) => (
+                  <Link key={deal.id} href={`/deals/${deal.id}`} className={`hero-priority-item ${deal.tone}`}>
+                    <span className="hero-priority-label">{deal.title}</span>
+                    <span className="hero-priority-meta">
+                      <span>{deal.account_name || "No account"}</span>
+                      <span>{formatDate(deal.follow_up_date)}</span>
+                    </span>
+                  </Link>
+                ))
+              ) : (
+                <div className="hero-priority-empty">No urgent follow-ups are queued right now.</div>
+              )}
+            </div>
           </div>
         </div>
       </section>
+
+      <div className="dashboard-insight-grid">
+        {executiveSignals.map((signal) => (
+          <div key={signal.label} className={`insight-card insight-${signal.tone}`}>
+            <div className="insight-card-top">
+              <span className="insight-card-label">{signal.label}</span>
+              <span className={`badge ${signal.badgeClass}`}>{signal.badge}</span>
+            </div>
+            <div className="insight-card-value">{signal.value}</div>
+            <p className="insight-card-copy">{signal.copy}</p>
+          </div>
+        ))}
+      </div>
 
       <div className="dashboard-kpi-grid">
         {kpiCards.map((card) => (
@@ -223,7 +316,16 @@ export function DashboardPage({ summary }) {
                           </Link>
                         </td>
                         <td>
-                          <span className="badge badge-secondary">{deal.stage_name || deal.status}</span>
+                          <span
+                            className="badge badge-secondary table-stage-badge"
+                            style={deal.stage_color ? {
+                              background: `${deal.stage_color}22`,
+                              color: deal.stage_color,
+                              borderColor: `${deal.stage_color}55`
+                            } : undefined}
+                          >
+                            {deal.stage_name || deal.status}
+                          </span>
                         </td>
                         <td className="table-muted-cell">{deal.account_name || "—"}</td>
                         <td className="table-subtle-cell">{formatDate(deal.updated_at)}</td>
@@ -270,8 +372,8 @@ export function DashboardPage({ summary }) {
             <div className="card-body stage-list-block">
               {summary.stageSummary.length ? (
                 summary.stageSummary.map((stage, index) => {
-                  const pct = totalDeals > 0 ? Math.round((stage.deal_count / totalDeals) * 100) : 0;
-                  const color = STAGE_COLORS[index % STAGE_COLORS.length];
+                  const pct = totalDeals > 0 ? Math.round((Number(stage.deal_count || 0) / totalDeals) * 100) : 0;
+                  const color = stage.color || STAGE_COLORS[index % STAGE_COLORS.length];
                   return (
                     <div key={stage.id} className="stage-distribution-item">
                       <div className="stage-distribution-head">
@@ -280,7 +382,7 @@ export function DashboardPage({ summary }) {
                           <span>{stage.name}</span>
                         </div>
                         <div className="stage-distribution-meta">
-                          <span>{formatCurrency(stage.stage_value)}</span>
+                          <span>{formatCurrency(stage.stage_value || 0)}</span>
                           <span>{stage.deal_count} deals</span>
                         </div>
                       </div>
@@ -303,30 +405,39 @@ export function DashboardPage({ summary }) {
       <div className="dashboard-secondary-grid">
         <div className="card">
           <div className="card-header">
-            <span className="card-title">Upcoming Follow-Ups</span>
+            <span className="card-title">Action Queue</span>
           </div>
           <div className="card-body followup-grid">
             {summary.upcomingFollowUps.length ? (
-              summary.upcomingFollowUps.map((deal) => (
-                <Link key={deal.id} href={`/deals/${deal.id}`} className="followup-item">
-                  <strong className="followup-title">{deal.title}</strong>
-                  <span className="followup-account">{deal.account_name || "No account"}</span>
-                  <div className="followup-meta-row">
-                    <span className="followup-date">{formatDate(deal.follow_up_date)}</span>
-                    <span
-                      className={`badge ${
-                        deal.priority === "High"
-                          ? "badge-danger"
-                          : deal.priority === "Low"
-                            ? "badge-secondary"
-                            : "badge-warning"
-                      }`}
-                    >
-                      {deal.priority || "Medium"}
-                    </span>
-                  </div>
-                </Link>
-              ))
+              summary.upcomingFollowUps.map((deal) => {
+                const followUpKey = String(deal.follow_up_date || "").slice(0, 10);
+                const toneClass = followUpKey && followUpKey < todayKey
+                  ? "followup-item-critical"
+                  : deal.priority === "High"
+                    ? "followup-item-watch"
+                    : "";
+
+                return (
+                  <Link key={deal.id} href={`/deals/${deal.id}`} className={`followup-item ${toneClass}`.trim()}>
+                    <strong className="followup-title">{deal.title}</strong>
+                    <span className="followup-account">{deal.account_name || "No account"}</span>
+                    <div className="followup-meta-row">
+                      <span className="followup-date">{formatDate(deal.follow_up_date)}</span>
+                      <span
+                        className={`badge ${
+                          deal.priority === "High"
+                            ? "badge-danger"
+                            : deal.priority === "Low"
+                              ? "badge-secondary"
+                              : "badge-warning"
+                        }`}
+                      >
+                        {deal.priority || "Medium"}
+                      </span>
+                    </div>
+                  </Link>
+                );
+              })
             ) : (
               <div className="empty-state">
                 <div className="empty-state-title">No follow-ups scheduled</div>
@@ -368,12 +479,12 @@ export function DashboardPage({ summary }) {
                       {row.won_deals} won deal{row.won_deals !== 1 ? "s" : ""}
                     </div>
                   </div>
-                  <strong className="performer-value">{formatCurrency(row.won_value)}</strong>
+                  <strong className="performer-value">{formatCurrency(row.won_value || 0)}</strong>
                 </div>
               ))
             ) : (
               <div className="empty-state">
-                <div className="empty-state-title">Rep ranking visible to managers and admins</div>
+                <div className="empty-state-title">Rep ranking becomes visible for managers and admins</div>
               </div>
             )}
           </div>

@@ -15,8 +15,8 @@ const headlineFont = Plus_Jakarta_Sans({
 });
 
 export const metadata = {
-  title: "TryGc Finance & Sales Dashboard",
-  description: "TryGc finance and sales operations dashboard"
+  title: "TryGC Revenue OS",
+  description: "Premium revenue operations workspace for pipeline, performance, and reporting."
 };
 
 export default function RootLayout({ children }) {

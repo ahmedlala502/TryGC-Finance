@@ -26,15 +26,41 @@ export function DealsTable({ deals, stages, owners, accounts, settings, user }) 
             {deals.map((deal) => (
               <tr key={deal.id}>
                 <td>
-                  <div style={{ display: "grid", gap: 4 }}>
+                  <div style={{ display: "grid", gap: 6 }}>
                     <Link href={`/deals/${deal.id}`}>{deal.title}</Link>
-                    <div style={{ color: "var(--text-secondary)", fontSize: 12 }}>
-                      {deal.priority || "Medium"} · {deal.market || "No market"}
+                    <div style={{ display: "flex", alignItems: "center", gap: 6, flexWrap: "wrap" }}>
+                      <span
+                        className={`badge ${
+                          deal.priority === "Critical"
+                            ? "badge-danger"
+                            : deal.priority === "High"
+                              ? "badge-warning"
+                              : deal.priority === "Low"
+                                ? "badge-secondary"
+                                : "badge-info"
+                        }`}
+                      >
+                        {deal.priority || "Medium"}
+                      </span>
+                      <span style={{ color: "var(--text-secondary)", fontSize: 12 }}>
+                        {deal.market || "No market"}
+                      </span>
                     </div>
                   </div>
                 </td>
                 <td>{deal.account_name || "—"}</td>
-                <td>{deal.stage_name || "—"}</td>
+                <td>
+                  <span
+                    className="badge badge-secondary table-stage-badge"
+                    style={deal.stage_color ? {
+                      background: `${deal.stage_color}22`,
+                      color: deal.stage_color,
+                      borderColor: `${deal.stage_color}55`
+                    } : undefined}
+                  >
+                    {deal.stage_name || "—"}
+                  </span>
+                </td>
                 <td>
                   <span className={`badge ${deal.status === "won" ? "badge-success" : deal.status === "lost" ? "badge-danger" : "badge-info"}`}>
                     {deal.status}
