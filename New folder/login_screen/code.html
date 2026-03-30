@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Login | SalesOps Pro CRM</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&amp;family=Inter:wght@300;400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "surface-bright": "#f8f9ff",
+              "on-primary-fixed": "#131b2e",
+              "tertiary": "#000000",
+              "tertiary-fixed": "#fcdeb5",
+              "on-primary-fixed-variant": "#3f465c",
+              "surface-container": "#e5eeff",
+              "on-secondary-fixed-variant": "#3a485c",
+              "surface-variant": "#d3e4fe",
+              "surface-dim": "#cbdbf5",
+              "surface": "#f8f9ff",
+              "tertiary-fixed-dim": "#dec29a",
+              "on-tertiary-fixed": "#271901",
+              "on-error-container": "#93000a",
+              "error-container": "#ffdad6",
+              "on-secondary-container": "#57657b",
+              "surface-tint": "#565e74",
+              "outline": "#76777d",
+              "error": "#ba1a1a",
+              "primary": "#000000",
+              "background": "#f8f9ff",
+              "inverse-surface": "#213145",
+              "secondary-fixed-dim": "#b9c7e0",
+              "inverse-primary": "#bec6e0",
+              "outline-variant": "#c6c6cd",
+              "surface-container-high": "#dce9ff",
+              "secondary-fixed": "#d5e3fd",
+              "on-primary": "#ffffff",
+              "on-primary-container": "#7c839b",
+              "tertiary-container": "#271901",
+              "on-tertiary-container": "#98805d",
+              "on-surface": "#0b1c30",
+              "surface-container-highest": "#d3e4fe",
+              "inverse-on-surface": "#eaf1ff",
+              "secondary-container": "#d5e3fd",
+              "on-background": "#0b1c30",
+              "primary-fixed": "#dae2fd",
+              "primary-fixed-dim": "#bec6e0",
+              "surface-container-low": "#eff4ff",
+              "on-secondary-fixed": "#0d1c2f",
+              "surface-container-lowest": "#ffffff",
+              "secondary": "#515f74",
+              "on-secondary": "#ffffff",
+              "on-tertiary": "#ffffff",
+              "primary-container": "#131b2e",
+              "on-error": "#ffffff",
+              "on-surface-variant": "#45464d",
+              "on-tertiary-fixed-variant": "#574425"
+            },
+            fontFamily: {
+              "headline": ["Manrope"],
+              "body": ["Inter"],
+              "label": ["Inter"]
+            },
+            borderRadius: {"DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem"},
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .bg-mesh {
+            background-color: #f8f9ff;
+            background-image: 
+                radial-gradient(at 0% 0%, hsla(220,100%,95%,1) 0, transparent 50%), 
+                radial-gradient(at 50% 0%, hsla(215,100%,98%,1) 0, transparent 50%), 
+                radial-gradient(at 100% 0%, hsla(210,100%,94%,1) 0, transparent 50%);
+        }
+    </style>
+</head>
+<body class="bg-mesh font-body text-on-surface min-h-screen flex flex-col items-center justify-center p-6 selection:bg-surface-container-highest">
+<!-- Subtle Texture Overlay -->
+<div class="fixed inset-0 pointer-events-none opacity-20" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBNTOMQH6YtkzxY--KPIQVY5hZ_fEQkGAXFP2w-IR1Vw1sq8-Qh6EQFKy8L6mCCjgukELgXilwUNSvWwRxoXvqI4knHWBijeYPg9LFdhHt-rkz-KMhkwKxzruKp4rZfBPtQisUouzkv1wmAHGyFsBSInxuIFUlRvd_ESQ33D0KnxSqwkGQ-3ESiFUPvAZhV2QraRayueEIxBilnta_h9ssToY8XHk333iNddmb7-Vf46K9O3-3tPm-UnH1EizvAaZ0s28-bfe9zRvw');"></div>
+<main class="relative w-full max-w-md z-10">
+<!-- Logo Section -->
+<div class="flex flex-col items-center mb-10 text-center">
+<div class="w-14 h-14 bg-primary-container rounded-xl flex items-center justify-center mb-4 shadow-lg shadow-primary-container/10">
+<span class="material-symbols-outlined text-on-primary text-3xl" style="font-variation-settings: 'FILL' 1;">insights</span>
+</div>
+<h1 class="font-headline font-extrabold text-2xl tracking-tighter text-on-surface">SalesOps Pro</h1>
+<p class="text-on-surface-variant text-sm mt-1 font-medium">Precision Management for National Operations</p>
+</div>
+<!-- Login Card -->
+<div class="bg-surface-container-lowest rounded-xl p-8 shadow-2xl shadow-on-surface/5 border border-outline-variant/10 backdrop-blur-sm">
+<div class="mb-8">
+<h2 class="font-headline font-bold text-xl text-on-surface mb-2">Sign In</h2>
+<p class="text-on-surface-variant text-sm">Enter credentials to access SalesOps Pro</p>
+</div>
+<form class="space-y-6" onsubmit="return false;">
+<!-- Email Field -->
+<div class="space-y-1.5">
+<label class="font-label text-xs font-semibold text-on-surface-variant uppercase tracking-wider" for="email">Business Email</label>
+<div class="relative group">
+<div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+<span class="material-symbols-outlined text-on-secondary-container text-lg">alternate_email</span>
+</div>
+<input class="w-full bg-surface-container-low border-none rounded-xl py-3.5 pl-11 pr-4 text-sm font-medium focus:ring-2 focus:ring-surface-variant transition-all placeholder:text-on-secondary-container/50" id="email" name="email" placeholder="name@company.com" required="" type="email"/>
+</div>
+</div>
+<!-- Password Field -->
+<div class="space-y-1.5">
+<div class="flex justify-between items-center">
+<label class="font-label text-xs font-semibold text-on-surface-variant uppercase tracking-wider" for="password">Security Key</label>
+<a class="text-xs font-semibold text-on-primary-container hover:text-on-surface transition-colors" href="#">Forgot Access?</a>
+</div>
+<div class="relative group">
+<div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+<span class="material-symbols-outlined text-on-secondary-container text-lg">lock</span>
+</div>
+<input class="w-full bg-surface-container-low border-none rounded-xl py-3.5 pl-11 pr-4 text-sm font-medium focus:ring-2 focus:ring-surface-variant transition-all placeholder:text-on-secondary-container/50" id="password" name="password" placeholder="••••••••••••" required="" type="password"/>
+</div>
+</div>
+<!-- Remember Me -->
+<div class="flex items-center">
+<input class="w-4 h-4 rounded-md border-outline-variant text-primary-container focus:ring-offset-0 focus:ring-transparent" id="remember" name="remember" type="checkbox"/>
+<label class="ml-3 text-sm font-medium text-on-surface-variant cursor-pointer select-none" for="remember">Remember this device</label>
+</div>
+<!-- Action Button -->
+<button class="w-full py-4 px-6 bg-gradient-to-br from-primary-container to-on-primary-fixed text-on-primary font-headline font-bold rounded-xl shadow-lg shadow-primary-container/20 hover:scale-[1.01] active:scale-[0.98] transition-all flex items-center justify-center gap-2 group" type="submit">
+                    Enter Dashboard
+                    <span class="material-symbols-outlined text-lg group-hover:translate-x-1 transition-transform">arrow_forward</span>
+</button>
+</form>
+<!-- Social/Alternative Logic -->
+<div class="mt-8">
+<div class="relative flex items-center justify-center mb-6">
+<div class="w-full border-t border-outline-variant/20"></div>
+<span class="absolute bg-surface-container-lowest px-4 text-xs font-bold text-on-secondary-container uppercase tracking-widest">Enterprise SSO</span>
+</div>
+<div class="grid grid-cols-2 gap-4">
+<button class="flex items-center justify-center gap-2 py-3 px-4 bg-surface-container border border-outline-variant/5 rounded-xl hover:bg-surface-variant transition-colors group">
+<div class="w-5 h-5 flex items-center justify-center">
+<img alt="" class="w-4 h-4" data-alt="clean minimalist google logo icon with primary colors on a white background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCxiBNupdX2TXZdrI266CyNHAF4EGkZHk1AS34p_xDq4akOZL3rPxqrihm5zGTzX4NOWFdT8aCMKPv-4X6rJ8xwyKVJoIR17oo1SlDkR-ul96Ab_RqMCK_BHsNAZMKvcH0pqZWlrK_AkWcO2YHrSfPbtOgLxOukbqL8MtlWXWJWKDUnjmnsPWWHVB2ZezEYqlCS4mR9NUN8FmYkFJvoGEZzLexXCfJ0sUjCBqniivYffTbAXBffejUNOSYTrd4Nuv0GfJ2o-Xe9pcE"/>
+</div>
+<span class="text-xs font-bold text-on-surface">Google</span>
+</button>
+<button class="flex items-center justify-center gap-2 py-3 px-4 bg-surface-container border border-outline-variant/5 rounded-xl hover:bg-surface-variant transition-colors group">
+<span class="material-symbols-outlined text-lg text-on-surface">hub</span>
+<span class="text-xs font-bold text-on-surface">Azure AD</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Role Context / Footer Information -->
+<div class="mt-8 grid grid-cols-3 gap-4 px-4">
+<div class="text-center p-3 rounded-lg bg-surface-container-low/50 backdrop-blur-sm border border-outline-variant/10">
+<span class="material-symbols-outlined text-on-primary-container block mb-1">verified_user</span>
+<span class="text-[10px] font-bold text-on-surface-variant uppercase tracking-tighter">Secure 256-bit</span>
+</div>
+<div class="text-center p-3 rounded-lg bg-surface-container-low/50 backdrop-blur-sm border border-outline-variant/10">
+<span class="material-symbols-outlined text-on-primary-container block mb-1">analytics</span>
+<span class="text-[10px] font-bold text-on-surface-variant uppercase tracking-tighter">Real-time Sync</span>
+</div>
+<div class="text-center p-3 rounded-lg bg-surface-container-low/50 backdrop-blur-sm border border-outline-variant/10">
+<span class="material-symbols-outlined text-on-primary-container block mb-1">support_agent</span>
+<span class="text-[10px] font-bold text-on-surface-variant uppercase tracking-tighter">Priority Ops</span>
+</div>
+</div>
+<!-- Footer -->
+<footer class="mt-12 text-center space-y-2">
+<div class="flex justify-center gap-6 text-[11px] font-bold text-on-secondary-container uppercase tracking-widest">
+<a class="hover:text-on-surface transition-colors" href="#">Privacy Policy</a>
+<a class="hover:text-on-surface transition-colors" href="#">Terms of Service</a>
+<a class="hover:text-on-surface transition-colors" href="#">Support Desk</a>
+</div>
+<p class="text-xs text-on-secondary-container/60 font-medium">
+                SalesOps Pro v4.8.2-stable © 2024 Enterprise Dynamics Corp.
+            </p>
+</footer>
+</main>
+<!-- Contextual Information (Asymmetric Layout Element) -->
+<div class="hidden lg:block fixed right-12 bottom-12 max-w-xs p-6 bg-white/40 backdrop-blur-xl rounded-2xl border border-white/20 shadow-xl">
+<div class="flex items-start gap-4">
+<div class="bg-surface-container-highest p-2 rounded-lg">
+<span class="material-symbols-outlined text-on-primary-container">info</span>
+</div>
+<div>
+<p class="text-xs font-headline font-bold text-on-surface mb-1">Operations Status</p>
+<div class="flex items-center gap-1.5 mb-2">
+<span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
+<span class="text-[10px] font-bold text-on-surface-variant uppercase">All Systems Nominal</span>
+</div>
+<p class="text-[11px] leading-relaxed text-on-surface-variant font-medium">
+                    The core pipeline engine is processing 4.2k events/sec. Global access latency is currently &lt; 12ms.
+                </p>
+</div>
+</div>
+</div>
+</body></html>

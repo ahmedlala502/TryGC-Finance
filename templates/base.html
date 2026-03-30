@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}{{ settings.get('system_name', 'SalesPro CRM') }}{% endblock %}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <style>
+    :root {
+      --primary: #6366f1;
+      --success: #22c55e;
+      --danger: #ef4444;
+      --warning: #f59e0b;
+    }
+  </style>
+  {% block extra_head %}{% endblock %}
+</head>
+<body>
+
+{% if error_code %}
+<div style="display:flex;align-items:center;justify-content:center;min-height:100vh;flex-direction:column;gap:16px;background:var(--body-bg)">
+  <div style="font-size:80px;font-weight:800;color:var(--primary)">{{ error_code }}</div>
+  <div style="font-size:20px;font-weight:600;color:var(--text-primary)">{{ error_msg }}</div>
+  <a href="/" class="btn btn-primary">Back to Dashboard</a>
+</div>
+{% else %}
+<div class="app-layout">
+
+  <!-- Mobile overlay -->
+  <div id="mobileOverlay" class="hidden" style="position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:999;"></div>
+
+  <!-- Sidebar -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-icon">S</div>
+      <span class="logo-text">{{ settings.get('system_name', 'SalesPro') }}</span>
+    </div>
+
+    <nav class="sidebar-nav">
+
+      <div class="nav-group">
+        <div class="nav-group-title">Overview</div>
+        <a href="{{ url_for('dashboard') }}" class="nav-item {% if request.endpoint == 'dashboard' %}active{% endif %}">
+          <span class="nav-icon">📊</span>
+          <span class="nav-label">Dashboard</span>
+        </a>
+      </div>
+
+      <div class="nav-group">
+        <div class="nav-group-title">Pipeline</div>
+        <a href="{{ url_for('deals_table') }}" class="nav-item {% if request.endpoint == 'deals_table' %}active{% endif %}">
+          <span class="nav-icon">📋</span>
+          <span class="nav-label">Table View</span>
+        </a>
+        <a href="{{ url_for('deals_kanban') }}" class="nav-item {% if request.endpoint == 'deals_kanban' %}active{% endif %}">
+          <span class="nav-icon">🗂</span>
+          <span class="nav-label">Kanban Board</span>
+        </a>
+        <a href="{{ url_for('accounts') }}" class="nav-item {% if request.endpoint in ['accounts', 'account_detail'] %}active{% endif %}">
+          <span class="nav-icon">🏢</span>
+          <span class="nav-label">Accounts</span>
+        </a>
+      </div>
+
+      <div class="nav-group">
+        <div class="nav-group-title">Analytics</div>
+        <a href="{{ url_for('performance') }}" class="nav-item {% if request.endpoint == 'performance' %}active{% endif %}">
+          <span class="nav-icon">🏆</span>
+          <span class="nav-label">Performance</span>
+        </a>
+        <a href="{{ url_for('targets') }}" class="nav-item {% if request.endpoint == 'targets' %}active{% endif %}">
+          <span class="nav-icon">🎯</span>
+          <span class="nav-label">Targets</span>
+        </a>
+      </div>
+
+      <div class="nav-group">
+        <div class="nav-group-title">Data</div>
+        {% if current_user.role in ['admin', 'manager'] %}
+        <a href="{{ url_for('import_data') }}" class="nav-item {% if request.endpoint == 'import_data' %}active{% endif %}">
+          <span class="nav-icon">📥</span>
+          <span class="nav-label">Import Data</span>
+        </a>
+        {% endif %}
+        <a href="{{ url_for('export_data') }}" class="nav-item {% if request.endpoint == 'export_data' %}active{% endif %}">
+          <span class="nav-icon">📤</span>
+          <span class="nav-label">Export Data</span>
+        </a>
+      </div>
+
+      {% if current_user.role in ['admin', 'manager'] %}
+      <div class="nav-group">
+        <div class="nav-group-title">Settings</div>
+        <a href="{{ url_for('stage_settings') }}" class="nav-item {% if request.endpoint == 'stage_settings' %}active{% endif %}">
+          <span class="nav-icon">⚙️</span>
+          <span class="nav-label">Stage Settings</span>
+        </a>
+        {% if current_user.role == 'admin' %}
+        <a href="{{ url_for('settings') }}" class="nav-item {% if request.endpoint == 'settings' %}active{% endif %}">
+          <span class="nav-icon">🔧</span>
+          <span class="nav-label">App Settings</span>
+        </a>
+        <a href="{{ url_for('users') }}" class="nav-item {% if request.endpoint == 'users' %}active{% endif %}">
+          <span class="nav-icon">👥</span>
+          <span class="nav-label">Users</span>
+        </a>
+        {% endif %}
+        <a href="{{ url_for('audit_logs') }}" class="nav-item {% if request.endpoint == 'audit_logs' %}active{% endif %}">
+          <span class="nav-icon">📝</span>
+          <span class="nav-label">Audit Logs</span>
+        </a>
+      </div>
+      {% endif %}
+
+    </nav>
+
+    <div class="sidebar-footer">
+      <a href="{{ url_for('profile') }}" class="sidebar-user" style="text-decoration:none">
+        <div class="avatar">{{ current_user.name[0].upper() if current_user.name else 'U' }}</div>
+        <div class="user-info">
+          <div class="user-name">{{ current_user.name }}</div>
+          <div class="user-role">{{ current_user.role }}</div>
+        </div>
+      </a>
+    </div>
+  </aside>
+
+  <!-- Main Wrapper -->
+  <div class="main-wrapper">
+
+    <!-- Topbar -->
+    <header class="topbar">
+      <button class="topbar-toggle" id="sidebarToggle" aria-label="Toggle sidebar">
+        ☰
+      </button>
+
+      <div class="topbar-search">
+        <span class="search-icon">🔍</span>
+        <input type="text" id="topbarSearch" placeholder="Search deals…" autocomplete="off">
+      </div>
+
+      <div class="topbar-actions">
+        <a href="{{ url_for('deal_new') }}" class="btn btn-primary btn-sm" title="New Deal">
+          + New Deal
+        </a>
+        <button class="topbar-btn" title="Notifications">
+          🔔
+          <span class="badge-dot"></span>
+        </button>
+        <a href="{{ url_for('profile') }}" class="topbar-btn" title="Profile" style="text-decoration:none">
+          <div class="avatar avatar-sm">{{ current_user.name[0].upper() if current_user.name else 'U' }}</div>
+        </a>
+        <a href="{{ url_for('logout') }}" class="topbar-btn" title="Logout" style="font-size:18px;text-decoration:none" data-confirm="Log out?">🚪</a>
+      </div>
+    </header>
+
+    <!-- Flash messages -->
+    <div class="flash-container" id="flashContainer">
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% for category, message in messages %}
+        <div class="flash flash-{{ category }}">
+          <span>{{ message }}</span>
+          <button class="flash-close" aria-label="Close">×</button>
+        </div>
+        {% endfor %}
+      {% endwith %}
+    </div>
+
+    <!-- Content -->
+    <main class="content-area">
+      {% block content %}{% endblock %}
+    </main>
+
+  </div><!-- /main-wrapper -->
+</div><!-- /app-layout -->
+{% endif %}
+
+<script src="{{ url_for('static', filename='js/app.js') }}"></script>
+{% block extra_scripts %}{% endblock %}
+</body>
+</html>

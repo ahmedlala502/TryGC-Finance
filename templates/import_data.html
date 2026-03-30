@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+{% block title %}Import Data — {{ settings.get('system_name', 'SalesPro CRM') }}{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div>
+    <h1 class="page-title">Import Data</h1>
+    <p class="page-subtitle">Upload Excel or CSV files to import deals</p>
+  </div>
+</div>
+
+<!-- Step 1: Upload -->
+<div id="importStep1">
+  <div class="card">
+    <div class="card-header"><span class="card-title">Step 1: Upload File</span></div>
+    <div class="card-body">
+      <div class="dropzone" id="importDropzone">
+        <div class="dropzone-icon">📁</div>
+        <div class="dropzone-title">Drag & drop your Excel file here</div>
+        <div class="dropzone-sub">or click to browse (.xlsx, .xls, .csv)</div>
+      </div>
+      <input type="file" id="importFile" accept=".xlsx,.xls,.csv" style="display:none">
+
+      <div style="margin-top:20px">
+        <h4 style="font-size:13px;font-weight:600;margin-bottom:10px">Expected columns (optional — you can map them in step 2):</h4>
+        <div style="display:flex;flex-wrap:wrap;gap:6px">
+          {% for col in ['title', 'contact_name', 'phone', 'email', 'business_type', 'source', 'expected_value', 'expected_close_date', 'notes', 'priority', 'market'] %}
+          <span class="badge badge-secondary">{{ col }}</span>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Step 2: Preview + Mapping -->
+<div id="importStep2" class="hidden">
+  <div class="card" style="margin-bottom:20px">
+    <div class="card-header">
+      <span class="card-title">Step 2: Preview & Map Columns</span>
+      <button type="button" class="btn btn-outline-secondary btn-sm" onclick="location.reload()">← Start Over</button>
+    </div>
+    <div class="card-body">
+      <h4 style="font-size:13px;font-weight:600;margin-bottom:10px">File Preview (first 5 rows)</h4>
+      <div class="table-wrapper" style="margin-bottom:24px;max-height:250px;overflow-y:auto">
+        <table id="previewTable"></table>
+      </div>
+
+      <div id="mappingSection"></div>
+
+      <div style="margin-top:20px">
+        <button type="button" class="btn btn-primary" id="executeImportBtn">📥 Import Data</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Step 3: Result -->
+<div id="importStep3" class="hidden">
+  <div class="card">
+    <div class="card-header">
+      <span class="card-title">Step 3: Import Complete</span>
+    </div>
+    <div class="card-body">
+      <div id="importResult"></div>
+      <div style="margin-top:20px;display:flex;gap:12px">
+        <a href="{{ url_for('deals_table') }}" class="btn btn-primary">View Deals</a>
+        <button type="button" class="btn btn-outline-secondary" onclick="location.reload()">Import Another File</button>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

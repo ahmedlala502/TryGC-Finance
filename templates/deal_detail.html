@@ -1,0 +1,306 @@
+{% extends "base.html" %}
+{% block title %}{% if is_new %}New Deal{% else %}{{ deal.title }}{% endif %} — {{ settings.get('system_name', 'SalesPro CRM') }}{% endblock %}
+
+{% block content %}
+{% if is_new %}
+<div class="page-header">
+  <div>
+    <h1 class="page-title">New Deal</h1>
+    <p class="page-subtitle"><a href="{{ url_for('deals_table') }}">Pipeline</a> › New Deal</p>
+  </div>
+</div>
+{% else %}
+<div class="deal-header">
+  <div class="deal-title-area">
+    <h2>{{ deal.title }}</h2>
+    <div style="display:flex;align-items:center;gap:10px;margin-top:6px;flex-wrap:wrap">
+      {% if deal.stage %}
+      <span class="stage-pill" style="background:{{ deal.stage.color }}22;color:{{ deal.stage.color }}">
+        <span style="width:6px;height:6px;border-radius:50%;background:{{ deal.stage.color }};display:inline-block"></span>
+        {{ deal.stage.name }}
+      </span>
+      {% endif %}
+      {% if deal.status == 'won' %}<span class="badge badge-success">Won</span>
+      {% elif deal.status == 'lost' %}<span class="badge badge-danger">Lost</span>
+      {% else %}<span class="badge badge-primary">Open</span>{% endif %}
+      {% if deal.priority == 'Critical' %}<span class="badge badge-danger">Critical</span>
+      {% elif deal.priority == 'High' %}<span class="badge badge-warning">High</span>{% endif %}
+    </div>
+  </div>
+  {% if current_user.role != 'viewer' %}
+  <div class="deal-actions">
+    <button class="btn btn-outline-primary" id="toggleEditBtn">Edit Deal</button>
+    {% if deal.status == 'open' %}
+    <form method="POST" action="{{ url_for('deal_won', deal_id=deal.id) }}" style="display:inline">
+      <input type="hidden" name="closed_value" value="{{ deal.expected_value }}">
+      <button type="submit" class="btn btn-success" data-confirm="Mark this deal as Won?">Mark Won</button>
+    </form>
+    <form method="POST" action="{{ url_for('deal_lost', deal_id=deal.id) }}" style="display:inline">
+      <button type="submit" class="btn btn-danger" data-confirm="Mark this deal as Lost?">Mark Lost</button>
+    </form>
+    {% endif %}
+    <form method="POST" action="{{ url_for('deal_archive', deal_id=deal.id) }}" style="display:inline">
+      <button type="submit" class="btn btn-outline-secondary btn-sm" data-confirm="Archive this deal?">Archive</button>
+    </form>
+    <form method="POST" action="{{ url_for('deal_delete', deal_id=deal.id) }}" style="display:inline">
+      <button type="submit" class="btn btn-danger btn-sm" data-confirm="Permanently delete this deal? This cannot be undone.">Delete</button>
+    </form>
+  </div>
+  {% endif %}
+</div>
+{% endif %}
+
+<div class="deal-layout">
+
+  <!-- Left: Deal Form -->
+  <div>
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title">Deal Information</span>
+      </div>
+      <div class="card-body">
+        {% if is_new %}
+        <form method="POST" action="{{ url_for('deal_new') }}" id="dealForm">
+        {% else %}
+        <form method="POST" action="{{ url_for('deal_edit', deal_id=deal.id) }}" id="dealForm">
+        {% endif %}
+
+          <div class="form-section">
+            <div class="form-section-title">Basic Information</div>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="title">Deal Title *</label>
+                <input type="text" id="title" name="title" required value="{{ deal.title if deal else '' }}" placeholder="e.g. Enterprise License Deal">
+              </div>
+              <div class="form-group">
+                <label for="account_id">Account</label>
+                <select id="account_id" name="account_id">
+                  <option value="">-- No Account --</option>
+                  {% for acc in accounts %}
+                  <option value="{{ acc.id }}" {% if deal and deal.account_id == acc.id %}selected{% endif %}>{{ acc.name }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="contact_name">Contact Name</label>
+                <input type="text" id="contact_name" name="contact_name" value="{{ deal.contact_name if deal else '' }}" placeholder="Primary contact">
+              </div>
+              <div class="form-group">
+                <label for="phone">Phone</label>
+                <input type="tel" id="phone" name="phone" value="{{ deal.phone if deal else '' }}" placeholder="+1-555-0000">
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="email">Email</label>
+              <input type="email" id="email" name="email" value="{{ deal.email if deal else '' }}" placeholder="contact@company.com">
+            </div>
+          </div>
+
+          <div class="form-section">
+            <div class="form-section-title">Deal Details</div>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="stage_id">Stage</label>
+                <select id="stage_id" name="stage_id">
+                  <option value="">-- Select Stage --</option>
+                  {% for s in stages %}
+                  <option value="{{ s.id }}" {% if deal and deal.stage_id == s.id %}selected{% endif %}>{{ s.name }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="assigned_to">Assigned To</label>
+                <select id="assigned_to" name="assigned_to">
+                  <option value="">-- Unassigned --</option>
+                  {% for u in users %}
+                  <option value="{{ u.id }}" {% if deal and deal.assigned_to == u.id %}selected{% elif not deal and u.id == current_user.id %}selected{% endif %}>{{ u.name }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+            </div>
+            <div class="form-row-3">
+              <div class="form-group">
+                <label for="business_type">Business Type</label>
+                <select id="business_type" name="business_type">
+                  <option value="">-- Select --</option>
+                  {% for bt in business_types %}
+                  <option value="{{ bt }}" {% if deal and deal.business_type == bt %}selected{% endif %}>{{ bt }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="source">Lead Source</label>
+                <select id="source" name="source">
+                  <option value="">-- Select --</option>
+                  {% for src in lead_sources %}
+                  <option value="{{ src }}" {% if deal and deal.source == src %}selected{% endif %}>{{ src }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="market">Market</label>
+                <select id="market" name="market">
+                  <option value="">-- Select --</option>
+                  {% for m in markets %}
+                  <option value="{{ m }}" {% if deal and deal.market == m %}selected{% endif %}>{{ m }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+            </div>
+            <div class="form-row-3">
+              <div class="form-group">
+                <label for="priority">Priority</label>
+                <select id="priority" name="priority">
+                  {% for p in priorities %}
+                  <option value="{{ p }}" {% if deal and deal.priority == p %}selected{% elif not deal and p == 'Medium' %}selected{% endif %}>{{ p }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="probability">Probability %</label>
+                <input type="number" id="probability" name="probability" min="0" max="100" value="{{ deal.probability if deal else 50 }}">
+              </div>
+              <div class="form-group">
+                <label for="expected_value">Expected Value ($)</label>
+                <input type="number" id="expected_value" name="expected_value" step="0.01" min="0" class="currency-input" value="{{ deal.expected_value if deal else '' }}" placeholder="0.00">
+              </div>
+            </div>
+            {% if deal and deal.status == 'won' %}
+            <div class="form-group">
+              <label for="closed_value">Closed Value ($)</label>
+              <input type="number" id="closed_value" name="closed_value" step="0.01" min="0" class="currency-input" value="{{ deal.closed_value if deal else '' }}" placeholder="0.00">
+            </div>
+            {% endif %}
+            <div class="form-row">
+              <div class="form-group">
+                <label for="expected_close_date">Expected Close Date</label>
+                <input type="date" id="expected_close_date" name="expected_close_date" value="{{ deal.expected_close_date.strftime('%Y-%m-%d') if deal and deal.expected_close_date else '' }}">
+              </div>
+              <div class="form-group">
+                <label for="follow_up_date">Follow-up Date</label>
+                <input type="date" id="follow_up_date" name="follow_up_date" value="{{ deal.follow_up_date.strftime('%Y-%m-%d') if deal and deal.follow_up_date else '' }}">
+              </div>
+            </div>
+          </div>
+
+          <div class="form-section">
+            <div class="form-section-title">Notes & Actions</div>
+            <div class="form-group">
+              <label for="next_action">Next Action</label>
+              <input type="text" id="next_action" name="next_action" value="{{ deal.next_action if deal else '' }}" placeholder="What needs to happen next?">
+            </div>
+            <div class="form-group">
+              <label for="notes">Notes</label>
+              <textarea id="notes" name="notes" rows="4" placeholder="Deal notes, background info…">{{ deal.notes if deal else '' }}</textarea>
+            </div>
+            <div class="form-group">
+              <label for="tags">Tags (comma-separated)</label>
+              <input type="text" id="tags" name="tags" value="{{ deal.tags if deal else '' }}" placeholder="tag1, tag2, …">
+            </div>
+          </div>
+
+          <div class="form-actions">
+            <button type="submit" class="btn btn-primary">{% if is_new %}Create Deal{% else %}Save Changes{% endif %}</button>
+            <a href="{{ url_for('deals_table') }}" class="btn btn-outline-secondary">Cancel</a>
+          </div>
+
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Right: Activity & Info -->
+  <div>
+    {% if not is_new and deal %}
+    <!-- Quick Info -->
+    <div class="card" style="margin-bottom:20px">
+      <div class="card-header"><span class="card-title">Quick Info</span></div>
+      <div class="card-body" style="padding:0">
+        <div style="padding:0 16px">
+          <div class="info-row">
+            <span class="info-label">Created</span>
+            <span class="info-value">{{ deal.created_at.strftime('%b %d, %Y') if deal.created_at else '—' }}</span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">Last Updated</span>
+            <span class="info-value">{{ deal.updated_at.strftime('%b %d, %Y') if deal.updated_at else '—' }}</span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">Expected Value</span>
+            <span class="info-value fw-600">${{ "{:,.2f}".format(deal.expected_value or 0) }}</span>
+          </div>
+          {% if deal.status == 'won' %}
+          <div class="info-row">
+            <span class="info-label">Closed Value</span>
+            <span class="info-value fw-600" style="color:var(--success)">${{ "{:,.2f}".format(deal.closed_value or 0) }}</span>
+          </div>
+          {% endif %}
+          <div class="info-row">
+            <span class="info-label">Probability</span>
+            <span class="info-value">
+              {{ deal.probability }}%
+              <div class="progress" style="width:80px;margin-top:4px">
+                <div class="progress-bar success" style="width:{{ deal.probability }}%"></div>
+              </div>
+            </span>
+          </div>
+          {% if deal.next_action %}
+          <div class="info-row">
+            <span class="info-label">Next Action</span>
+            <span class="info-value">{{ deal.next_action }}</span>
+          </div>
+          {% endif %}
+          {% if deal.follow_up_date %}
+          <div class="info-row">
+            <span class="info-label">Follow-up</span>
+            <span class="info-value {% if deal.follow_up_date < today %}text-danger{% endif %}">
+              {{ deal.follow_up_date.strftime('%b %d, %Y') }}
+              {% if deal.follow_up_date < today %}<span class="badge badge-danger badge-sm">Overdue</span>{% endif %}
+            </span>
+          </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+
+    <!-- Activity Log -->
+    <div class="card">
+      <div class="card-header"><span class="card-title">Activity Log</span></div>
+      <div class="card-body">
+        {% if audit_entries %}
+        <div class="activity-timeline">
+          {% for entry in audit_entries %}
+          <div class="activity-item">
+            <div class="activity-icon">
+              {% if entry.action == 'create' %}📝
+              {% elif entry.action in ['won'] %}🏆
+              {% elif entry.action in ['lost'] %}❌
+              {% elif entry.action == 'update' %}✏️
+              {% elif entry.action == 'archive' %}📦
+              {% else %}📌{% endif %}
+            </div>
+            <div class="activity-content">
+              <div class="activity-text">
+                {% if entry.user %}<strong>{{ entry.user.name }}</strong>{% else %}System{% endif %}
+                — {{ entry.detail or entry.action }}
+              </div>
+              <div class="activity-time">{{ entry.timestamp.strftime('%b %d, %Y %H:%M') if entry.timestamp else '' }}</div>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+        {% else %}
+        <div class="empty-state" style="padding:30px 0">
+          <div style="font-size:28px;margin-bottom:8px">📋</div>
+          <div class="empty-state-sub">No activity yet</div>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}
+

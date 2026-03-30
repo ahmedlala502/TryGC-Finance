@@ -1,0 +1,183 @@
+{% extends "base.html" %}
+{% block title %}{{ account.name }} — {{ settings.get('system_name', 'SalesPro CRM') }}{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div>
+    <h1 class="page-title">{{ account.name }}</h1>
+    <p class="page-subtitle"><a href="{{ url_for('accounts') }}">Accounts</a> › {{ account.name }}</p>
+  </div>
+  {% if current_user.role != 'viewer' %}
+  <button class="btn btn-primary" onclick="document.getElementById('editAccountModal').classList.remove('hidden')">Edit Account</button>
+  {% endif %}
+</div>
+
+<div class="deal-layout">
+  <!-- Account Info -->
+  <div>
+    <div class="card" style="margin-bottom:20px">
+      <div class="card-header"><span class="card-title">Account Details</span></div>
+      <div class="card-body" style="padding:0">
+        <div style="padding:0 16px">
+          <div class="info-row">
+            <span class="info-label">Industry</span>
+            <span class="info-value">{{ account.industry or '—' }}</span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">Contact</span>
+            <span class="info-value">{{ account.contact_name or '—' }}</span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">Phone</span>
+            <span class="info-value">{{ account.phone or '—' }}</span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">Email</span>
+            <span class="info-value">{{ account.email or '—' }}</span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">Location</span>
+            <span class="info-value">{{ account.location or '—' }}</span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">Assigned To</span>
+            <span class="info-value">
+              {% set rep = users | selectattr('id', 'equalto', account.assigned_to) | first | default(None) %}
+              {{ rep.name if rep else '—' }}
+            </span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">Created</span>
+            <span class="info-value">{{ account.created_at.strftime('%b %d, %Y') if account.created_at else '—' }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    {% if account.notes %}
+    <div class="card">
+      <div class="card-header"><span class="card-title">Notes</span></div>
+      <div class="card-body">
+        <p style="font-size:13px;color:var(--text-secondary);line-height:1.7">{{ account.notes }}</p>
+      </div>
+    </div>
+    {% endif %}
+  </div>
+
+  <!-- Linked Deals -->
+  <div style="grid-column:span 1">
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title">Linked Deals ({{ deals | length }})</span>
+        {% if current_user.role != 'viewer' %}
+        <a href="{{ url_for('deal_new') }}" class="btn btn-primary btn-sm">+ New Deal</a>
+        {% endif %}
+      </div>
+      {% if deals %}
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>Deal</th>
+              <th>Stage</th>
+              <th>Status</th>
+              <th>Value</th>
+              <th>Close Date</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for deal in deals %}
+            {% set stage = all_stages | selectattr('id', 'equalto', deal.stage_id) | first | default(None) %}
+            <tr>
+              <td>
+                <a href="{{ url_for('deal_detail', deal_id=deal.id) }}" style="font-weight:600">{{ deal.title }}</a>
+              </td>
+              <td>
+                {% if stage %}
+                <span class="stage-pill" style="background:{{ stage.color }}22;color:{{ stage.color }}">{{ stage.name }}</span>
+                {% else %}—{% endif %}
+              </td>
+              <td>
+                {% if deal.status == 'won' %}<span class="badge badge-success">Won</span>
+                {% elif deal.status == 'lost' %}<span class="badge badge-danger">Lost</span>
+                {% else %}<span class="badge badge-primary">Open</span>{% endif %}
+              </td>
+              <td class="fw-600">${{ "{:,.0f}".format(deal.expected_value or 0) }}</td>
+              <td class="text-sm">{{ deal.expected_close_date.strftime('%b %d, %Y') if deal.expected_close_date else '—' }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% else %}
+      <div class="card-body">
+        <div class="empty-state" style="padding:24px 0">
+          <div style="font-size:28px;margin-bottom:6px">📋</div>
+          <div class="empty-state-sub">No deals linked to this account</div>
+        </div>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+<!-- Edit Account Modal -->
+{% if current_user.role != 'viewer' %}
+<div id="editAccountModal" class="modal-overlay hidden">
+  <div class="modal">
+    <div class="modal-header">
+      <h3 class="modal-title">Edit Account</h3>
+      <button class="modal-close" onclick="document.getElementById('editAccountModal').classList.add('hidden')">×</button>
+    </div>
+    <div class="modal-body">
+      <form method="POST" action="{{ url_for('account_edit', account_id=account.id) }}">
+        <div class="form-group">
+          <label>Account Name *</label>
+          <input type="text" name="name" required value="{{ account.name }}">
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Industry</label>
+            <input type="text" name="industry" value="{{ account.industry or '' }}">
+          </div>
+          <div class="form-group">
+            <label>Location</label>
+            <input type="text" name="location" value="{{ account.location or '' }}">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Contact Name</label>
+            <input type="text" name="contact_name" value="{{ account.contact_name or '' }}">
+          </div>
+          <div class="form-group">
+            <label>Phone</label>
+            <input type="tel" name="phone" value="{{ account.phone or '' }}">
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Email</label>
+          <input type="email" name="email" value="{{ account.email or '' }}">
+        </div>
+        <div class="form-group">
+          <label>Assigned To</label>
+          <select name="assigned_to">
+            {% for u in users %}
+            <option value="{{ u.id }}" {% if u.id == account.assigned_to %}selected{% endif %}>{{ u.name }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Notes</label>
+          <textarea name="notes" rows="3">{{ account.notes or '' }}</textarea>
+        </div>
+        <div class="modal-footer" style="padding:0;margin-top:16px">
+          <button type="button" class="btn btn-outline-secondary" onclick="document.getElementById('editAccountModal').classList.add('hidden')">Cancel</button>
+          <button type="submit" class="btn btn-primary">Save Changes</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endif %}
+{% endblock %}

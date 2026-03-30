@@ -1,0 +1,125 @@
+{% extends "base.html" %}
+{% block title %}Targets — {{ settings.get('system_name', 'SalesPro CRM') }}{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div>
+    <h1 class="page-title">Targets</h1>
+    <p class="page-subtitle">Set monthly sales targets per rep</p>
+  </div>
+</div>
+
+<!-- Month Picker -->
+<form method="GET" style="margin-bottom:20px">
+  <div class="filter-bar">
+    <div class="filter-group">
+      <label>Month</label>
+      <input type="month" name="month" value="{{ month }}">
+    </div>
+    <div class="filter-actions">
+      <button type="submit" class="btn btn-primary btn-sm">Load</button>
+    </div>
+  </div>
+</form>
+
+{% if current_user.role in ['admin', 'manager'] %}
+<form method="POST" action="{{ url_for('targets_set') }}">
+  <input type="hidden" name="month" value="{{ month }}">
+{% endif %}
+
+<!-- Target Input Table -->
+<div class="card" style="margin-bottom:24px">
+  <div class="card-header">
+    <span class="card-title">Targets for {{ month }}</span>
+    {% if current_user.role in ['admin', 'manager'] %}
+    <button type="submit" class="btn btn-primary btn-sm">💾 Save Targets</button>
+    {% endif %}
+  </div>
+  {% if users %}
+  <div class="table-wrapper">
+    <table>
+      <thead>
+        <tr>
+          <th>Rep</th>
+          {% for m in metrics %}
+          <th>{{ m.title() }}</th>
+          {% endfor %}
+        </tr>
+      </thead>
+      <tbody>
+        {% for u in users %}
+        <tr>
+          <td>
+            <div class="d-flex align-center gap-2">
+              <div class="avatar avatar-sm">{{ u.name[0] }}</div>
+              <span class="fw-600">{{ u.name }}</span>
+            </div>
+          </td>
+          {% for m in metrics %}
+          <td>
+            {% if current_user.role in ['admin', 'manager'] %}
+            <input type="number" name="target_{{ u.id }}_{{ m }}" step="0.01" min="0"
+                   value="{{ target_data.get(u.id, {}).get(m, 0) }}"
+                   style="width:110px;padding:5px 8px">
+            {% else %}
+            {{ target_data.get(u.id, {}).get(m, 0) | int }}
+            {% endif %}
+          </td>
+          {% endfor %}
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div class="card-body">
+    <div class="empty-state" style="padding:24px 0">
+      <div class="empty-state-sub">No sales reps found</div>
+    </div>
+  </div>
+  {% endif %}
+</div>
+
+{% if current_user.role in ['admin', 'manager'] %}
+</form>
+{% endif %}
+
+<!-- Progress Bars -->
+<h2 style="font-size:16px;font-weight:700;margin-bottom:16px">Target Progress — {{ month }}</h2>
+<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px">
+  {% for u in users %}
+  <div class="card">
+    <div class="card-header">
+      <div class="d-flex align-center gap-2">
+        <div class="avatar avatar-sm">{{ u.name[0] }}</div>
+        <span class="fw-600">{{ u.name }}</span>
+      </div>
+    </div>
+    <div class="card-body">
+      {% for m in metrics %}
+      {% set target_val = target_data.get(u.id, {}).get(m, 0) %}
+      {% set actual_val = actuals.get(u.id, {}).get(m, 0) %}
+      {% set pct = [(actual_val / target_val * 100) if target_val > 0 else 0, 100] | min | int %}
+      <div style="margin-bottom:14px">
+        <div style="display:flex;justify-content:space-between;margin-bottom:5px">
+          <span style="font-size:12px;font-weight:600;text-transform:capitalize">{{ m }}</span>
+          <span style="font-size:12px;color:var(--text-secondary)">
+            {% if m == 'revenue' %}
+              ${{ "{:,.0f}".format(actual_val) }} / ${{ "{:,.0f}".format(target_val) }}
+            {% else %}
+              {{ actual_val | int }} / {{ target_val | int }}
+            {% endif %}
+            <span class="{% if pct >= 100 %}text-success{% elif pct >= 70 %}text-warning{% else %}text-danger{% endif %} fw-600">({{ pct }}%)</span>
+          </span>
+        </div>
+        <div class="progress">
+          <div class="progress-bar {% if pct >= 100 %}success{% elif pct >= 70 %}{% else %}danger{% endif %}"
+               style="width:{{ pct }}%"></div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% endblock %}

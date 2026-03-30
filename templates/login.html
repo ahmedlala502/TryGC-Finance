@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sign In — SalesPro CRM</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+<div class="login-page">
+  <div class="login-card">
+    <div class="login-logo">
+      <div class="logo-icon" style="width:44px;height:44px;font-size:22px">S</div>
+      <span style="font-size:22px;font-weight:700;color:var(--text-primary)">SalesPro CRM</span>
+    </div>
+
+    <h1 class="login-title">Welcome back</h1>
+    <p class="login-sub">Sign in to your account to continue</p>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% for category, message in messages %}
+      <div class="flash flash-{{ category }}" style="margin-bottom:16px;">
+        <span>{{ message }}</span>
+      </div>
+      {% endfor %}
+    {% endwith %}
+
+    <form method="POST" action="{{ url_for('login') }}">
+      <div class="form-group">
+        <label for="email">Email Address</label>
+        <input type="email" id="email" name="email" required
+               placeholder="you@company.com"
+               value="{{ request.form.get('email', '') }}"
+               autofocus>
+      </div>
+
+      <div class="form-group">
+        <label for="password">Password</label>
+        <input type="password" id="password" name="password" required
+               placeholder="••••••••">
+      </div>
+
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;">
+        <label style="display:flex;align-items:center;gap:8px;font-size:13px;font-weight:400;text-transform:none;letter-spacing:0;cursor:pointer;color:var(--text-secondary)">
+          <input type="checkbox" name="remember" style="width:auto"> Remember me
+        </label>
+      </div>
+
+      <button type="submit" class="btn btn-primary w-100" style="justify-content:center;padding:11px">
+        Sign In
+      </button>
+    </form>
+
+    <div style="margin-top:28px;padding-top:20px;border-top:1px solid var(--border-color);">
+      <p style="font-size:12px;color:var(--text-muted);text-align:center;margin-bottom:10px;">Demo credentials</p>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;">
+        <div style="background:var(--body-bg);border-radius:6px;padding:8px 10px;font-size:11px;">
+          <div style="font-weight:600;color:var(--text-primary)">Admin</div>
+          <div style="color:var(--text-muted)">admin@local</div>
+          <div style="color:var(--text-muted)">Admin@12345</div>
+        </div>
+        <div style="background:var(--body-bg);border-radius:6px;padding:8px 10px;font-size:11px;">
+          <div style="font-weight:600;color:var(--text-primary)">Manager</div>
+          <div style="color:var(--text-muted)">manager@local</div>
+          <div style="color:var(--text-muted)">Manager@12345</div>
+        </div>
+        <div style="background:var(--body-bg);border-radius:6px;padding:8px 10px;font-size:11px;">
+          <div style="font-weight:600;color:var(--text-primary)">Sales Rep</div>
+          <div style="color:var(--text-muted)">alice@local</div>
+          <div style="color:var(--text-muted)">Sales@12345</div>
+        </div>
+        <div style="background:var(--body-bg);border-radius:6px;padding:8px 10px;font-size:11px;">
+          <div style="font-weight:600;color:var(--text-primary)">Viewer</div>
+          <div style="color:var(--text-muted)">viewer@local</div>
+          <div style="color:var(--text-muted)">Viewer@12345</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="flash-container" id="flashContainer"></div>
+<script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>

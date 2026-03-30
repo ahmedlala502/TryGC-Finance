@@ -1,0 +1,151 @@
+{% extends "base.html" %}
+{% block title %}Audit Logs — {{ settings.get('system_name', 'SalesPro CRM') }}{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div>
+    <h1 class="page-title">Audit Logs</h1>
+    <p class="page-subtitle">{{ total }} log entries</p>
+  </div>
+</div>
+
+<!-- Filters -->
+<form method="GET">
+  <div class="filter-bar">
+    <div class="filter-group">
+      <label>User</label>
+      <select name="user_id">
+        <option value="">All Users</option>
+        {% for u in users %}
+        <option value="{{ u.id }}" {% if filters.get('user_id')|string == u.id|string %}selected{% endif %}>{{ u.name }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="filter-group">
+      <label>Action</label>
+      <select name="action">
+        <option value="">All Actions</option>
+        {% for a in actions %}
+        <option value="{{ a }}" {% if filters.get('action') == a %}selected{% endif %}>{{ a }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="filter-group">
+      <label>From</label>
+      <input type="date" name="date_from" value="{{ filters.get('date_from', '') }}">
+    </div>
+    <div class="filter-group">
+      <label>To</label>
+      <input type="date" name="date_to" value="{{ filters.get('date_to', '') }}">
+    </div>
+    <div class="filter-actions">
+      <button type="submit" class="btn btn-primary btn-sm">Filter</button>
+      <a href="{{ url_for('audit_logs') }}" class="btn btn-outline-secondary btn-sm">Reset</a>
+    </div>
+  </div>
+</form>
+
+<!-- Logs Table -->
+<div class="card">
+  {% if logs %}
+  <div class="table-wrapper">
+    <table>
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Timestamp</th>
+          <th>User</th>
+          <th>Action</th>
+          <th>Entity Type</th>
+          <th>Entity ID</th>
+          <th>Detail</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for log in logs %}
+        <tr>
+          <td class="text-muted text-xs">{{ log.id }}</td>
+          <td class="text-sm">
+            {% if log.timestamp %}
+            {{ log.timestamp.strftime('%b %d, %Y') }}<br>
+            <span class="text-xs text-muted">{{ log.timestamp.strftime('%H:%M:%S') }}</span>
+            {% else %}—{% endif %}
+          </td>
+          <td>
+            {% if log.user %}
+            <div class="d-flex align-center gap-2">
+              <div class="avatar avatar-sm">{{ log.user.name[0] }}</div>
+              <span class="text-sm fw-600">{{ log.user.name }}</span>
+            </div>
+            {% else %}<span class="text-muted text-sm">System</span>{% endif %}
+          </td>
+          <td>
+            {% if log.action in ['create'] %}<span class="badge badge-success">{{ log.action }}</span>
+            {% elif log.action in ['delete', 'bulk_delete'] %}<span class="badge badge-danger">{{ log.action }}</span>
+            {% elif log.action in ['won'] %}<span class="badge badge-success">{{ log.action }}</span>
+            {% elif log.action in ['lost'] %}<span class="badge badge-danger">{{ log.action }}</span>
+            {% elif log.action in ['login'] %}<span class="badge badge-info">{{ log.action }}</span>
+            {% elif log.action in ['logout'] %}<span class="badge badge-secondary">{{ log.action }}</span>
+            {% elif log.action in ['update', 'password_change'] %}<span class="badge badge-warning">{{ log.action }}</span>
+            {% else %}<span class="badge badge-secondary">{{ log.action }}</span>{% endif %}
+          </td>
+          <td>
+            {% if log.entity_type %}<span class="badge badge-primary">{{ log.entity_type }}</span>{% else %}—{% endif %}
+          </td>
+          <td>
+            {% if log.entity_id %}
+              {% if log.entity_type == 'deal' %}
+              <a href="{{ url_for('deal_detail', deal_id=log.entity_id) }}" class="text-sm">#{{ log.entity_id }}</a>
+              {% elif log.entity_type == 'account' %}
+              <a href="{{ url_for('account_detail', account_id=log.entity_id) }}" class="text-sm">#{{ log.entity_id }}</a>
+              {% else %}
+              <span class="text-sm">#{{ log.entity_id }}</span>
+              {% endif %}
+            {% else %}—{% endif %}
+          </td>
+          <td style="max-width:300px">
+            <span class="text-sm text-secondary" title="{{ log.detail }}">
+              {{ (log.detail or '—')[:100] }}{% if log.detail and log.detail|length > 100 %}…{% endif %}
+            </span>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Pagination -->
+  {% set base_qs = '&user_id=' ~ filters.get('user_id','') ~ '&action=' ~ filters.get('action','') ~ '&date_from=' ~ filters.get('date_from','') ~ '&date_to=' ~ filters.get('date_to','') %}
+  {% if total_pages > 1 %}
+  <div class="card-footer">
+    <div class="pagination">
+      {% if page > 1 %}
+      <a href="?page={{ page-1 }}{{ base_qs }}" class="page-btn">‹</a>
+      {% else %}<span class="page-btn disabled">‹</span>{% endif %}
+
+      {% for p in range(1, total_pages + 1) %}
+        {% if p == page %}<span class="page-btn active">{{ p }}</span>
+        {% elif p == 1 or p == total_pages or (p >= page - 2 and p <= page + 2) %}
+        <a href="?page={{ p }}{{ base_qs }}" class="page-btn">{{ p }}</a>
+        {% elif p == page - 3 or p == page + 3 %}<span class="page-btn disabled">…</span>{% endif %}
+      {% endfor %}
+
+      {% if page < total_pages %}
+      <a href="?page={{ page+1 }}{{ base_qs }}" class="page-btn">›</a>
+      {% else %}<span class="page-btn disabled">›</span>{% endif %}
+    </div>
+    <div style="text-align:center;font-size:12px;color:var(--text-muted);margin-top:4px">
+      Showing {{ (page-1)*per_page + 1 }}–{{ [page*per_page, total]|min }} of {{ total }}
+    </div>
+  </div>
+  {% endif %}
+
+  {% else %}
+  <div class="empty-state">
+    <div class="empty-state-icon">📝</div>
+    <div class="empty-state-title">No audit log entries</div>
+    <div class="empty-state-sub">Actions will be logged here</div>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}
